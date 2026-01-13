@@ -74,7 +74,6 @@ public abstract class CameraIO {
         this.config = config;
         this.estimator = new PhotonPoseEstimator(
             VisionConstants.AprilTag.kLayout,
-            PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
             config.bot2cam
         );
     }
@@ -113,7 +112,7 @@ public abstract class CameraIO {
 
         // Process all available results
         for (PhotonPipelineResult result : results) {
-            estimation = estimator.update(result);
+            estimation = estimator.estimateCoprocMultiTagPose(result);
             updateStdDevs(estimation, result.getTargets());
         }
 
