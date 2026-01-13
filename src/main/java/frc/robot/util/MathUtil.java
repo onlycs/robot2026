@@ -15,6 +15,9 @@ public class MathUtil {
     /** Tau (2π) constant for angle calculations. */
     public static final double kTau = 2.0 * Math.PI;
 
+    /** An arbitrarily small number. */
+    public static final double kEpsilon = 1e-6;
+
     /**
      * Calculates the transformation from one pose to another in the first pose's frame.
      *
@@ -61,5 +64,16 @@ public class MathUtil {
      */
     public static Rotation2d normalizeAngle(Rotation2d rotation) {
         return new Rotation2d(normalizeAngle(rotation.getRadians()));
+    }
+
+    /**
+     * Adds a really small number to avoid division by zero.
+     *
+     * @param value The value to adjust
+     * @return The adjusted value
+     */
+    public static double avoidZero(double value) {
+        if (Math.abs(value) < kEpsilon) return Math.copySign(kEpsilon, value);
+        return value;
     }
 }

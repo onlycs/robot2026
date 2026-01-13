@@ -1,5 +1,6 @@
-package frc.robot.util;
+package frc.robot.vector;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import java.util.function.Function;
 
 /**
@@ -41,6 +42,17 @@ public class Vec2 {
     public Vec2(double x, double y) {
         this.x = x;
         this.y = y;
+    }
+
+    /**
+     * Constructs a new Vec2 with the given magnitude and angle.
+     *
+     * @param mag The magnitude for both components
+     * @param angle The angle in radians
+     */
+    public Vec2(double mag, Rotation2d angle) {
+        this.x = mag * Math.cos(angle.getRadians());
+        this.y = mag * Math.sin(angle.getRadians());
     }
 
     /**
@@ -151,6 +163,27 @@ public class Vec2 {
     }
 
     /**
+     * Gets the angle of this vector from the positive X-axis.
+     *
+     * @return A Rotation2d representing the angle of this vector
+     */
+    public Rotation2d getAngle() {
+        return new Rotation2d(Math.atan2(this.y, this.x));
+    }
+
+    /**
+     * Rotates this vector by a given angle.
+     * @return A new Vec2 representing the rotated vector
+     */
+    public Vec2 rotate(Rotation2d angle) {
+        double cosA = Math.cos(angle.getRadians());
+        double sinA = Math.sin(angle.getRadians());
+        double newX = cosA * this.x - sinA * this.y;
+        double newY = sinA * this.x + cosA * this.y;
+        return new Vec2(newX, newY);
+    }
+
+    /**
      * Calculates the magnitude (length) of this vector.
      *
      * Computed as sqrt(x² + y²).
@@ -158,7 +191,7 @@ public class Vec2 {
      * @return The magnitude of this vector
      */
     public double mag() {
-        return Math.sqrt(x * x + y * y);
+        return Math.hypot(this.x, this.y);
     }
 
     /**
@@ -170,7 +203,7 @@ public class Vec2 {
      * @return The squared magnitude of this vector
      */
     public double mag2() {
-        return x * x + y * y;
+        return this.dot(this);
     }
 
     /**

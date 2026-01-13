@@ -33,7 +33,7 @@ import frc.robot.util.AdvantageUtil;
 import frc.robot.util.AllianceUtil;
 import frc.robot.util.IterUtil;
 import frc.robot.util.RateLimiter;
-import frc.robot.util.Vec2;
+import frc.robot.vector.Vec2;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

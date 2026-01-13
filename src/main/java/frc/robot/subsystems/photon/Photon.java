@@ -42,7 +42,6 @@ public class Photon {
      *
      * @param onMeasurement Callback to invoke when a measurement is ready
      * @param factory Factory function to create camera implementations
-     * @param cameras Configurations for all cameras to be managed
      */
     public Photon(
         Consumer<VisionMeasurement> onMeasurement,
