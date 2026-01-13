@@ -3,8 +3,6 @@ package frc.robot.util;
 import static edu.wpi.first.units.Units.Microseconds;
 
 import choreo.trajectory.SwerveSample;
-import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -15,6 +13,8 @@ import frc.robot.vector.Force;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.AutoLogOutputManager;
 import org.littletonrobotics.junction.Logger;
 
 // Taken straight from 6995's code. Praise be to 6995!!
@@ -247,7 +247,7 @@ public class Repulsor {
     private List<Obstacle> fixedObstacles = new ArrayList<>();
     private Optional<Translation2d> goalOpt = Optional.empty();
 
-    @Logged
+    @AutoLogOutput
     public Pose2d goal() {
         return new Pose2d(
             goalOpt.orElse(Translation2d.kZero),
@@ -276,15 +276,14 @@ public class Repulsor {
             0,
             0
         );
+
+        AutoLogOutputManager.addObject(this);
     }
 
-    @NotLogged
     private boolean useGoalInArrows = false;
 
-    @NotLogged
     private boolean useObstaclesInArrows = true;
 
-    @NotLogged
     private boolean useWallsInArrows = true;
 
     // private Pose2d arrowBackstage = new Pose2d(-10, -10, Rotation2d.kZero);
