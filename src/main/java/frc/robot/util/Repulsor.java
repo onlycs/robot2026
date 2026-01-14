@@ -9,7 +9,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.TimedRobot;
-import frc.robot.vector.Force;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -37,7 +37,7 @@ public class Repulsor {
          * @param target The goal position.
          * @return The force at a certain position.
          */
-        public abstract Force getForceAtPosition(
+        public abstract Vec2 getForceAtPosition(
             Translation2d position,
             Translation2d target
         );
@@ -77,14 +77,14 @@ public class Repulsor {
             this.loc = loc;
         }
 
-        public Force getForceAtPosition(
+        public Vec2 getForceAtPosition(
             Translation2d position,
             Translation2d target
         ) {
             // displacement from obstacle
             double dist = loc.getDistance(position);
             if (dist > 4) {
-                return new Force();
+                return Vec2.ZERO;
             }
             // distance from the position to the outer radius of the target.
             double outwardsMag = distToForceMag(
@@ -92,7 +92,7 @@ public class Repulsor {
             );
 
             // initial calculated force; vector from the obstacle to the position.
-            Force initial = new Force(
+            Vec2 initial = new Vec2(
                 outwardsMag,
                 position.minus(loc).getAngle()
             );
@@ -109,10 +109,10 @@ public class Repulsor {
                 2;
 
             return initial
-                .rotateBy(Rotation2d.kCCW_90deg) // rotate left 90 degrees
-                .div(initial.getNorm()) // normalize
-                .times(mag) // set magnitude
-                .plus(initial); // add initial force
+                .rotate(Rotation2d.kCCW_90deg) // rotate left 90 degrees
+                .div(initial.mag()) // normalize
+                .mul(mag) // set magnitude
+                .add(initial); // add initial force
         }
     }
 
@@ -132,7 +132,7 @@ public class Repulsor {
             this.radius = radius;
         }
 
-        public Force getForceAtPosition(
+        public Vec2 getForceAtPosition(
             Translation2d position,
             Translation2d target
         ) {
@@ -156,7 +156,7 @@ public class Repulsor {
             );
 
             // initial force from the obstacle.
-            Force initial = new Force(
+            Vec2 initial = new Vec2(
                 outwardsMag,
                 position.minus(loc).getNorm() > 1e-4
                     ? position.minus(loc).getAngle()
@@ -181,7 +181,7 @@ public class Repulsor {
                 .rotateBy(Rotation2d.kCCW_90deg);
 
             // adds sideways to force for resultant force
-            return new Force(sideways, sidewaysAngle).plus(initial);
+            return new Vec2(sideways, sidewaysAngle).add(initial);
         }
     }
 
@@ -194,11 +194,11 @@ public class Repulsor {
             this.y = y;
         }
 
-        public Force getForceAtPosition(
+        public Vec2 getForceAtPosition(
             Translation2d position,
             Translation2d target
         ) {
-            return new Force(0, distToForceMag(y - position.getY(), 1));
+            return new Vec2(0, distToForceMag(y - position.getY(), 1));
         }
     }
 
@@ -211,11 +211,11 @@ public class Repulsor {
             this.x = x;
         }
 
-        public Force getForceAtPosition(
+        public Vec2 getForceAtPosition(
             Translation2d position,
             Translation2d target
         ) {
-            return new Force(distToForceMag(x - position.getX(), 1), 0);
+            return new Vec2(distToForceMag(x - position.getX(), 1), 0);
         }
     }
 
@@ -320,10 +320,10 @@ public class Repulsor {
      * @param goal Position of the goal.
      * @return The force to the goal.
      */
-    Force getGoalForce(Translation2d curLocation, Translation2d goal) {
+    Vec2 getGoalForce(Translation2d curLocation, Translation2d goal) {
         var displacement = goal.minus(curLocation);
         if (displacement.getNorm() == 0) {
-            return new Force();
+            return Vec2.ZERO;
         }
         var direction = displacement.getAngle();
         var mag =
@@ -331,7 +331,7 @@ public class Repulsor {
             (1 +
                 1.0 /
                 (0.0001 + displacement.getNorm() * displacement.getNorm()));
-        return new Force(mag, direction);
+        return new Vec2(mag, direction);
     }
 
     /**
@@ -341,10 +341,10 @@ public class Repulsor {
      * @param target Position of the goal.
      * @return The force from the walls.
      */
-    Force getWallForce(Translation2d curLocation, Translation2d target) {
-        var force = Force.kZero;
+    Vec2 getWallForce(Translation2d curLocation, Translation2d target) {
+        var force = Vec2.ZERO;
         for (Obstacle obs : WALLS) {
-            force = force.plus(obs.getForceAtPosition(curLocation, target));
+            force = force.add(obs.getForceAtPosition(curLocation, target));
         }
         return force;
     }
@@ -356,10 +356,10 @@ public class Repulsor {
      * @param target Position of the goal.
      * @return The force from the obstacles.
      */
-    Force getObstacleForce(Translation2d curLocation, Translation2d target) {
-        var force = Force.kZero;
+    Vec2 getObstacleForce(Translation2d curLocation, Translation2d target) {
+        var force = Vec2.ZERO;
         for (Obstacle obs : FIELD_OBSTACLES) {
-            force = force.plus(obs.getForceAtPosition(curLocation, target));
+            force = force.add(obs.getForceAtPosition(curLocation, target));
         }
         return force;
     }
@@ -371,10 +371,10 @@ public class Repulsor {
      * @param target Position of the goal.
      * @return The total resultant force from field elements.
      */
-    Force getForce(Translation2d curLocation, Translation2d target) {
+    Vec2 getForce(Translation2d curLocation, Translation2d target) {
         var goalForce = getGoalForce(curLocation, target)
-            .plus(getObstacleForce(curLocation, target))
-            .plus(getWallForce(curLocation, target));
+            .add(getObstacleForce(curLocation, target))
+            .add(getWallForce(curLocation, target));
         return goalForce;
     }
 
@@ -470,9 +470,9 @@ public class Repulsor {
                 return sample(goal, goalRotation, 0, 0, 0);
             } else {
                 // Add in all forces, ternary operator for the useGoal -> getGoalForce
-                Force netForce = getObstacleForce(position, goal)
-                    .plus(getWallForce(position, goal))
-                    .plus(useGoal ? getGoalForce(position, goal) : Force.kZero);
+                Vec2 netForce = getObstacleForce(position, goal)
+                    .add(getWallForce(position, goal))
+                    .add(useGoal ? getGoalForce(position, goal) : Vec2.ZERO);
 
                 // Change stepSize_m if we are using goal
                 stepSize_m = useGoal
@@ -486,7 +486,7 @@ public class Repulsor {
                 // Next desired displacement from the max speed and angle of the net force
                 Translation2d step = new Translation2d(
                     stepSize_m,
-                    netForce.getAngle()
+                    netForce.theta()
                 );
 
                 // Next desired position
@@ -529,10 +529,10 @@ public class Repulsor {
                 break;
             } else {
                 var netForce = getForce(robot, goalTranslation);
-                if (netForce.getNorm() == 0) {
+                if (netForce.mag() == 0) {
                     break;
                 }
-                var step = new Translation2d(stepSize_m, netForce.getAngle());
+                var step = new Translation2d(stepSize_m, netForce.theta());
                 var intermediateGoal = robot.plus(step);
                 traj.add(intermediateGoal);
                 pathLength += stepSize_m;

@@ -1,7 +1,6 @@
 package frc.robot.util;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
-import frc.robot.vector.Vec2;
 
 /**
  * A rate limiter for constraining acceleration of robot movement inputs.

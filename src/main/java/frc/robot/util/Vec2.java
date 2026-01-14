@@ -1,4 +1,4 @@
-package frc.robot.vector;
+package frc.robot.util;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import java.util.function.Function;
@@ -167,19 +167,27 @@ public class Vec2 {
      *
      * @return A Rotation2d representing the angle of this vector
      */
-    public Rotation2d getAngle() {
+    public Rotation2d theta() {
         return new Rotation2d(Math.atan2(this.y, this.x));
     }
 
     /**
-     * Rotates this vector by a given angle.
+     * Rotates this vector by a given angle, counterclockwise.
+	 * 
+	 * <p>This multiplies the translation vector by a counterclockwise rotation matrix of the given
+     * angle.
+     *
+     * <pre>
+     * [x_new] = [other.cos, -other.sin][x]
+     * [y_new] = [other.sin,  other.cos][y]
+     * </pre>
      *
      * @param angle The angle to rotate by
      * @return A new Vec2 representing the rotated vector
      */
     public Vec2 rotate(Rotation2d angle) {
-        double cosA = Math.cos(angle.getRadians());
-        double sinA = Math.sin(angle.getRadians());
+        double cosA = angle.getCos();
+        double sinA = angle.getSin();
         double newX = cosA * this.x - sinA * this.y;
         double newY = sinA * this.x + cosA * this.y;
         return new Vec2(newX, newY);

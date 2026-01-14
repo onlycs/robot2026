@@ -3,7 +3,7 @@ package frc.robot.constants;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 
-import frc.robot.vector.Vec2;
+import frc.robot.util.Vec2;
 
 /**
  * Global robot physical properties and dimensions.
