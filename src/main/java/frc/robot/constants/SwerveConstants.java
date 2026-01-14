@@ -21,9 +21,11 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
  *   <li>SwerveDriveKinematics for odometry and control
  * </ul>
  *
- * <p>All gear ratios follow the convention {@code 1 motorRotation : kReduction wheelRotations}.
+ * <p>All gear ratios follow the convention {@code kReduction motorRotation : 1 wheelRotations}.
  */
 public final class SwerveConstants {
+
+    private SwerveConstants() {}
 
     /** Swerve drive kinematics object for odometry and chassis speed conversion. */
     public static final SwerveDriveKinematics kKinematics =
@@ -51,25 +53,45 @@ public final class SwerveConstants {
      */
     public enum Module {
         // TODO: Season: make controls set these IDs. Should be FrontLeft=1x and go clockwise from top-down view
+        /** Front-left swerve module. */
         kFrontLeft(1),
+        /** Front-right swerve module. */
         kFrontRight(2),
+        /** Rear-right swerve module. */
         kRearRight(3),
+        /** Rear-left swerve module. */
         kRearLeft(4);
 
+        /** The module's index value (1-4). */
         public final int value;
 
         Module(int i) {
             this.value = i;
         }
 
+        /**
+         * Drive motor CAN ID
+         *
+         * @return The CAN ID of the driving motor for this module
+         */
         public int driveId() {
             return this.value * 10;
         }
 
+        /**
+         * Turn motor CAN ID
+         *
+         * @return The CAN ID of the turning motor for this module
+         */
         public int turnId() {
             return this.driveId() + 5;
         }
 
+        /**
+         * Absolute encoder angular offset
+         *
+         * @return The angular offset of this module's absolute encoder
+         */
         public double angularOffset() {
             return switch (this) {
                 case kFrontLeft -> -Math.PI / 2;
@@ -79,6 +101,11 @@ public final class SwerveConstants {
             };
         }
 
+        /**
+         * Translation from robot center to module.
+         *
+         * @return The translation of this module relative to robot center
+         */
         public Translation2d translation() {
             double absX = RobotConstants.DriveBase.kWheelBase / 2;
             double absY = RobotConstants.DriveBase.kTrackWidth / 2;
@@ -101,10 +128,10 @@ public final class SwerveConstants {
      *   <li>Bevel gear (45T) and bevel pinion (15T) for 90° turn
      *   <li>Spur gear (22T) final reduction to wheel
      * </ul>
-     *
-     * <p>Total reduction: {@code (14 * 15) / (45 * 22) = 0.2121}
      */
     public static final class DriveMotor {
+
+        private DriveMotor() {}
 
         /**
          * Number of teeth on the pinion gear.
@@ -124,22 +151,13 @@ public final class SwerveConstants {
         public static final double kBevelPinionTeeth = 15.0;
 
         /**
-         * Gear reduction from motor to wheel ({@code ~0.2121}).
-         *
-         * <p>Calculated as: {@code (pinion * bevel_pinion) / (bevel_gear * spur)}
+         * Gear reduction from motor to wheel.
          */
         public static final double kReduction =
-            (kPinionTeeth * kBevelPinionTeeth) / (kBevelGearTeeth * kSpurTeeth);
+            (kBevelGearTeeth * kSpurTeeth) / (kPinionTeeth * kBevelPinionTeeth);
 
-        /** Moment of inertia of drive system (1.91e-4 kg·m²). */
+        /** Moment of inertia of drive system. */
         public static final double kMoI = 1.91e-4;
-
-        /**
-         * Static friction voltage threshold (0.1 volts).
-         *
-         * <p>Minimum voltage required to overcome static friction and turn the wheel.
-         */
-        public static final double kStaticFriction = 0.1;
 
         /** Idle mode set to brake (prevents coasting when disabled). */
         public static final IdleMode kIdleMode = IdleMode.kBrake;
@@ -152,14 +170,12 @@ public final class SwerveConstants {
      */
     public static final class TurnMotor {
 
-        /** Moment of inertia of steering system (2.17e-5 kg·m²). */
+        private TurnMotor() {}
+
+        /** Moment of inertia of steering system. */
         public static final double kMoI = 2.17e-5;
 
-        /**
-         * Gear reduction from turn motor to module rotation ({@code ~46.42}).
-         *
-         * <p>Calculated as: {@code 9424 / 203 = 46.42}
-         */
+        /** Gear reduction from turn motor to module rotation. */
         public static final double kReduction = 9424. / 203.;
 
         /** Idle mode set to brake (holds module angle when stopped). */
@@ -173,18 +189,16 @@ public final class SwerveConstants {
      */
     public static final class DriveEncoder {
 
+        private DriveEncoder() {}
+
         /**
          * Position conversion factor (motor rotations → wheel radians).
-         *
-         * <p>Calculated as: {@code 2π * gear_reduction = 1.171 rad/motor-rotation}
          */
         public static final double kPositionFactor =
-            kTau * DriveMotor.kReduction;
+            kTau / DriveMotor.kReduction;
 
         /**
          * Velocity conversion factor (motor RPM → wheel rad/s).
-         *
-         * <p>Calculated as: {@code position_factor / 60 = 0.01952 (rad/s)/RPM}
          */
         public static final double kVelocityFactor = kPositionFactor / 60.0;
     }
@@ -196,6 +210,8 @@ public final class SwerveConstants {
      */
     public static final class TurnEncoder {
 
+        private TurnEncoder() {}
+
         /**
          * Position conversion factor (motor rotations → motor radians).
          *
@@ -205,16 +221,12 @@ public final class SwerveConstants {
 
         /**
          * Velocity conversion factor (motor RPM → motor rad/s).
-         *
-         * <p>Calculated as: {@code 2π / 60 = 0.1047 (rad/s)/RPM}
          */
         public static final double kVelocityFactor = kPositionFactor / 60.0;
 
         /**
          * Invert the turn encoder.
-         *
-         * <p><strong>Never change this. Ever.</strong> Encoder inversion is critical
-         * for correct module orientation control.
+         * <p><strong>Never change this. Ever.</strong> Changing this once lost two Neo 550s
          */
         public static final boolean kInverted = true;
     }
@@ -226,27 +238,24 @@ public final class SwerveConstants {
      */
     public static final class Wheel {
 
-        /** Radius of the wheel (1.5 inches = 0.0381 meters). */
+        private Wheel() {}
+
+        /** Radius of the wheel. */
         public static final double kRadius = Inches.of(1.5).in(Meters);
 
         /**
          * Angular free speed of the wheel (radians/second).
-         *
-         * <p>Calculated from NEO free speed and drive reduction:
-         * {@code 594.7 rad/s * (1/5.36) = 110.9 rad/s}
          */
         public static final double kFreeSpeedAngular =
-            MotorConstants.Neo.kFreeSpeed * DriveMotor.kReduction;
+            MotorConstants.Neo.kFreeSpeed / DriveMotor.kReduction;
 
         /**
-         * Linear free speed of the wheel (meters/second).
-         *
-         * <p>Calculated as: {@code angular_speed * radius = 4.23 m/s}
+         * Linear free speed of the wheel.
          */
         public static final double kFreeSpeedLinear =
             kFreeSpeedAngular * kRadius;
 
-        /** Estimated coefficient of friction (1.3 for rubber on carpet). */
+        /** Estimated coefficient of friction for wheel on carpet. */
         public static final double kFrictionCoefficient = 1.3;
     }
 
@@ -257,10 +266,12 @@ public final class SwerveConstants {
      */
     public static final class MaxSpeed {
 
-        /** Maximum linear speed (4.804 m/s, ~15.8 ft/s). */
+        private MaxSpeed() {}
+
+        /** Maximum linear speed. */
         public static final double kLinear = 4.804;
 
-        /** Maximum angular speed (12.440 rad/s, ~2.0 rev/s). */
+        /** Maximum angular speed. */
         public static final double kAngular = 12.440;
     }
 }

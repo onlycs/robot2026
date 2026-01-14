@@ -227,6 +227,8 @@ public class Alerter {
      * Registers a gyroscope for error monitoring.
      *
      * <p>See {@link #register(String, SparkBase)} for details.
+     *
+     * @param gyro The AHRS gyro instance to monitor
      */
     public void register(AHRS gyro) {
         devices.add(

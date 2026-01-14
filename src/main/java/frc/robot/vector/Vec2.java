@@ -173,6 +173,8 @@ public class Vec2 {
 
     /**
      * Rotates this vector by a given angle.
+     *
+     * @param angle The angle to rotate by
      * @return A new Vec2 representing the rotated vector
      */
     public Vec2 rotate(Rotation2d angle) {
@@ -247,6 +249,13 @@ public class Vec2 {
         return new Vec2(Math.signum(this.x), Math.signum(this.y));
     }
 
+    /**
+     * Creates a copy of this vector.
+     *
+     * <p>This is almost always not needed since the class is immutable.
+     *
+     * @return A new Vec2 with the same components as this vector
+     */
     public Vec2 copy() {
         return new Vec2(this.x, this.y);
     }

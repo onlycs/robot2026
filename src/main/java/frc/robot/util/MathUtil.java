@@ -12,6 +12,8 @@ import edu.wpi.first.math.geometry.Transform2d;
  */
 public class MathUtil {
 
+    private MathUtil() {}
+
     /** Tau (2π) constant for angle calculations. */
     public static final double kTau = 2.0 * Math.PI;
 

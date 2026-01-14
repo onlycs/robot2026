@@ -19,6 +19,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
  */
 public final class ControlConstants {
 
+    private ControlConstants() {}
+
     /** Gyroscope direction multiplier ({@code -1.0} inverts gyro readings). */
     public static final double kGyroFactor = -1.0;
 
@@ -29,6 +31,8 @@ public final class ControlConstants {
      * swerve module's drive motor.
      */
     public static final class DrivetrainDrive {
+
+        private DrivetrainDrive() {}
 
         /** Proportional gain for velocity error. */
         public static final double kP = 0.004;
@@ -58,6 +62,8 @@ public final class ControlConstants {
      */
     public static final class DrivetrainTurn {
 
+        private DrivetrainTurn() {}
+
         /** Proportional gain for angular position error. */
         public static final double kP = 2.00;
         /** Integral gain for accumulated angular error. */
@@ -83,6 +89,8 @@ public final class ControlConstants {
      */
     public static final class Auto {
 
+        private Auto() {}
+
         /** Proportional gain for X and Y position errors (orthogonal axes). */
         public static final double kOrthoP = 1.25;
         /** Integral gain for orthogonal position errors. */
@@ -105,6 +113,8 @@ public final class ControlConstants {
      * {@link frc.robot.commands.align.TagAlign} for precise positioning.
      */
     public static final class Align {
+
+        private Align() {}
 
         /** Proportional gain for X and Y alignment errors. */
         public static final double kOrthoP = 4.75;
@@ -140,6 +150,8 @@ public final class ControlConstants {
      * and reduce mechanical stress on the drivetrain.
      */
     public static final class SlewRateLimit {
+
+        private SlewRateLimit() {}
 
         /** Maximum translational acceleration (meters/second²). TODO: Can be increased (less top-heavy than previous design). */
         public static final double kOrthogonal = 1.667;

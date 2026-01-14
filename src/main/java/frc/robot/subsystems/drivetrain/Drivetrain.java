@@ -101,8 +101,9 @@ public class Drivetrain extends SubsystemBase {
      * Creates all four swerve modules, initializes the pose estimator, and sets up
      * the gyroscope. The actual hardware implementations are provided via dependency injection.
      *
-     * @param gyro The gyroscope implementation (NavX or GyroReplay)
      * @param moduleFactory A factory function that creates swerve modules based on their configuration
+     * @param gyro The gyroscope implementation (NavX or GyroReplay)
+     * @param quest The Quest IO implementation (Meta3S or QuestReplay)
      */
     public Drivetrain(
         Function<Module, ModuleIO> moduleFactory,

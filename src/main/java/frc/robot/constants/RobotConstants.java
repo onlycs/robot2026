@@ -7,16 +7,19 @@ import frc.robot.vector.Vec2;
 
 /**
  * Global robot physical properties and dimensions.
- *
- * <p>Contains mass, moment of inertia, and drive base geometry used for
- * dynamics modeling, path planning, and collision avoidance.
+ * TODO: Update values based on actual measurements and Ross
  */
 public class RobotConstants {
+
+    private RobotConstants() {}
 
     /** Robot mass including battery and bumpers. */
     public static final double kMass = 68.023;
 
-    /** Robot moment of inertia about vertical axis. */
+    /**
+     * Robot moment of inertia about vertical axis.
+     * Ross will be able to calculate this for you
+     */
     public static final double kMoI = 4.235;
 
     /**
@@ -26,6 +29,8 @@ public class RobotConstants {
      * kinematics calculations and obstacle clearance checks.
      */
     public static final class DriveBase {
+
+        private DriveBase() {}
 
         /**
          * Distance between swerve modules (21.5 inches = 0.5461 meters).
@@ -52,7 +57,7 @@ public class RobotConstants {
          * Bumper corner radius (diagonal half-distance).
          *
          * <p>Used for circular collision detection. Calculated as:
-         * {@code 0.5 * sqrt(length² + width²) = 0.5661 meters}
+         * {@code 0.5 * sqrt(length² + width²)}
          */
         public static final double kBumperRadius =
             0.5 * Math.hypot(kBumperLength, kBumperWidth);
@@ -61,7 +66,7 @@ public class RobotConstants {
          * Drive base radius (module diagonal half-distance).
          *
          * <p>Used for angular velocity calculations. Calculated as:
-         * {@code 0.5 * sqrt(wheelbase² + trackWidth²) = 0.3863 meters}
+         * {@code 0.5 * sqrt(wheelbase² + trackWidth²)}
          */
         public static final double kDriveRadius =
             0.5 * Math.hypot(kWheelBase, kTrackWidth);

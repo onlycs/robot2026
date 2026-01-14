@@ -37,11 +37,11 @@ import org.photonvision.targeting.PhotonTrackedTarget;
  */
 public abstract class CameraIO {
 
-    /**
-     * Data structure for logging vision measurements with AdvantageKit.
-     */
+    /** Auto-logged data structure for camera vision measurements. */
     @AutoLog
     public static class CameraData {
+
+        CameraData() {}
 
         /** The current vision measurement, if available. */
         public VisionMeasurement measurement = null;

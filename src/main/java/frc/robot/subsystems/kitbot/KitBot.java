@@ -16,22 +16,38 @@ public class KitBot extends SubsystemBase {
     /** The KitBot IO implementation */
     private final KitBotIO io;
 
-    /** Constructs a KitBot subsystem with the given IO implementation */
+    /**
+     * Constructs a KitBot subsystem with the given IO implementation
+     *
+     * @param io The KitBot IO implementation to use
+     */
     public KitBot(KitBotIO io) {
         this.io = io;
     }
 
-    /** Sets the feeder motor power, [-1, 1] */
+    /**
+     * Sets the feeder motor power
+     *
+     * @param power The motor power, [-1.0, 1.0]
+     */
     public void setFeeder(double power) {
         io.setFeeder(power);
     }
 
-    /** Sets the intake motor power, [-1, 1] */
+    /**
+     * Sets the intake motor power
+     *
+     * @param power The motor power, [-1.0, 1.0]
+     */
     public void setIntake(double power) {
         io.setIntake(power);
     }
 
-    /** Returns the motor data */
+    /**
+     * KitBot motor and sensor data
+     *
+     * @return a copy of the current KitBot data
+     */
     public KitBotData getData() {
         return io.data.clone();
     }

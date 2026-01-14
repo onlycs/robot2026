@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj.RobotBase;
  */
 public class AdvantageConstants {
 
+    private AdvantageConstants() {}
+
     /**
      * The current robot operating mode.
      *
@@ -25,16 +27,13 @@ public class AdvantageConstants {
 
     /**
      * Robot operating modes for AdvantageKit.
-     *
-     * <ul>
-     *   <li>{@code Real}: Running on physical robot hardware with real sensors/actuators
-     *   <li>{@code Sim}: Running in simulation (not currently supported)
-     *   <li>{@code Replay}: Replaying from previously recorded log files for analysis
-     * </ul>
      */
     public enum AdvantageMode {
+        /** Running on physical robot hardware with real sensors/actuators */
         Real,
+        /** Running in simulation (not currently supported) */
         Sim,
+        /** Replaying from previously recorded log files for analysis */
         Replay,
     }
 }

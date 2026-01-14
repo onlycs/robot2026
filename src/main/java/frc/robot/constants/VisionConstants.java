@@ -26,6 +26,8 @@ import edu.wpi.first.math.numbers.N3;
  */
 public final class VisionConstants {
 
+    private VisionConstants() {}
+
     /**
      * Vision measurement data structure.
      *
@@ -103,6 +105,8 @@ public final class VisionConstants {
      */
     public static final class Align {
 
+        private Align() {}
+
         /**
          * Maximum distance for vision-based alignment (1.5 meters).
          *
@@ -117,6 +121,8 @@ public final class VisionConstants {
      * <p>Defines tag positions and IDs for the game field.
      */
     public static final class AprilTag {
+
+        private AprilTag() {}
 
         /**
          * Field layout for 2025 Reefscape (Welded variant).
@@ -134,6 +140,8 @@ public final class VisionConstants {
      * to weight vision measurements vs. odometry.
      */
     public static final class StdDevs {
+
+        private StdDevs() {}
 
         /**
          * Single AprilTag measurement uncertainty.

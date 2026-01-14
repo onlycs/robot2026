@@ -1,7 +1,5 @@
 package frc.robot.constants;
 
-import static frc.robot.util.MathUtil.kTau;
-
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.FeedbackSensor;
@@ -20,12 +18,15 @@ import com.revrobotics.spark.config.SparkMaxConfig;
  *   <li>PID gains and feedforward coefficients
  *   <li>Output limits and wrapping behavior
  *   <li>Idle modes (brake vs. coast)
+ *   <li>UVW commutation settings for brushless motors
  * </ul>
  *
  * <p>Configurations are applied to motors via {@link com.revrobotics.spark.SparkBase#configure}
  * during subsystem initialization.
  */
 public class SparkConfigConstants {
+
+    private SparkConfigConstants() {}
 
     /**
      * Reset mode for configuration apply operations.
@@ -50,6 +51,8 @@ public class SparkConfigConstants {
      * <p>Separate configs for drive (NEO) and turn (NEO 550) motors.
      */
     public static final class Drivetrain {
+
+        private Drivetrain() {}
 
         /** Complete configuration for swerve drive motors (velocity control). */
         public static final SparkMaxConfig kDrive;
@@ -146,9 +149,14 @@ public class SparkConfigConstants {
     /**
      * KitBot motor configurations.
      *
-     * <p>Separate configs for feeder and intake motors.
+     * <p>Separate configs for feeder and intake motors. NOTE:
+     * we are NOT running normal NEOs here, so all encoder settings are omitted.
+     *
+     * TODO: verify that the motors we are using do not include encoders
      */
     public static final class KitBot {
+
+        private KitBot() {}
 
         /** Complete configuration for feeder motor. */
         public static final SparkMaxConfig kFeeder;
@@ -169,19 +177,6 @@ public class SparkConfigConstants {
             // Normalize motor output for battery voltage 11.0-13.0V
             kFeeder.voltageCompensation(MotorConstants.kNominalVoltage);
             kIntake.voltageCompensation(MotorConstants.kNominalVoltage);
-
-            // ===== ENCODER CONVERSIONS =====
-            // Convert motor outputs from RPM and revs to rad/s and radians
-            kFeeder.encoder.positionConversionFactor(kTau);
-            kFeeder.encoder.velocityConversionFactor(kTau / 60.0);
-            kIntake.encoder.positionConversionFactor(kTau);
-            kIntake.encoder.velocityConversionFactor(kTau / 60.0);
-
-            // ===== UVW SETTINGS =====
-            kFeeder.encoder.uvwMeasurementPeriod(MotorConstants.Neo.kUvwPeriod);
-            kFeeder.encoder.uvwAverageDepth(MotorConstants.Neo.kUvwDepth);
-            kIntake.encoder.uvwMeasurementPeriod(MotorConstants.Neo.kUvwPeriod);
-            kIntake.encoder.uvwAverageDepth(MotorConstants.Neo.kUvwDepth);
 
             // ===== VOLTAGE COMPENSATION =====
             // Normalize motor output for battery voltage 11.0-13.0V

@@ -26,16 +26,6 @@ import org.littletonrobotics.junction.Logger;
  * <p>This is an abstract command that subclasses override via {@link Supplied} or
  * by implementing {@link #getTargetPose()}.
  *
- * <p><strong>PID Controllers:</strong>
- * <ul>
- *   <li>X Controller (orthogonal): Aligns robot X position
- *   <li>Y Controller (orthogonal): Aligns robot Y position
- *   <li>Rotation Controller (profiled): Aligns robot heading with velocity/acceleration constraints
- * </ul>
- *
- * <p>The rotation controller uses continuous input (0 to 2π) so angles wrap correctly
- * (e.g., -0.1 rad is treated as 2π - 0.1).
- *
  * <p>Default concrete implementation: {@link Supplied}
  */
 public abstract class Navigate extends Command {
@@ -171,18 +161,16 @@ public abstract class Navigate extends Command {
     /**
      * Command execution: Calculate and send chassis speeds to reach target.
      *
-     * <p>Called periodically (~50 Hz) while the command is running. Uses the
-     * {@link HolonomicDriveController} to calculate the required chassis speeds (vx, vy, ω)
-     * based on current pose, target pose, and controller gains.
+     * <p>Uses the {@link HolonomicDriveController} to calculate the required
+     * chassis speeds (vx, vy, ω) based on current pose, target pose, and
+     * controller gains.
      */
     @Override
     public final void execute() {
         if (currentTarget == null) return;
 
         Pose2d robot = drivetrain.pose();
-        // Calculate speeds using holonomic controller
-        // Period (0.01s) is approximate for WPILib timing
-        // Target rotation is used as the desired angular velocity direction
+        // Calculate speeds using holonomic controller, with a target velocity of 1 cm/s (0.01 m/s)
         ChassisSpeeds speeds = controller.calculate(
             robot,
             currentTarget,

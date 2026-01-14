@@ -1,25 +1,34 @@
 package frc.robot.subsystems.kitbot;
 
 import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.Radians;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.revrobotics.REVLibError;
-import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import frc.robot.constants.IOConstants;
 import frc.robot.constants.SparkConfigConstants;
 
+/**
+ * KitBot IO implementation using Spark Max motor controllers.
+ *
+ * <p>This class interfaces with Spark Max motor controllers to control
+ * the feeder and intake motors of the KitBot superstructure.
+ */
 public class KitBotSpark extends KitBotIO {
 
+    /** Spark Max motor controller for the feeder mechanism */
     final SparkMax feeder;
+
+    /** Spark Max motor controller for the intake mechanism */
     final SparkMax intake;
 
-    final RelativeEncoder feederEncoder;
-    final RelativeEncoder intakeEncoder;
-
+    /**
+     * Constructs a KitBotSpark IO implementation.
+     *
+     * <p>Initializes the Spark Max motor controllers for the feeder and intake,
+     * and configures them with predefined settings.
+     */
     public KitBotSpark() {
         this.feeder = new SparkMax(
             IOConstants.KitBot.kFeeder,
@@ -29,9 +38,6 @@ public class KitBotSpark extends KitBotIO {
             IOConstants.KitBot.kIntake,
             MotorType.kBrushed
         );
-
-        this.feederEncoder = feeder.getEncoder();
-        this.intakeEncoder = intake.getEncoder();
 
         feeder.configure(
             SparkConfigConstants.KitBot.kFeeder,
@@ -45,34 +51,25 @@ public class KitBotSpark extends KitBotIO {
         );
     }
 
-    /** Set feeder motor power, [-1, 1] */
     @Override
     public void setFeeder(double power) {
         feeder.set(power);
     }
 
-    /** Set intake motor power, [-1, 1] */
     @Override
     public void setIntake(double power) {
         intake.set(power);
     }
 
-    /**
-     * Updates KitBot sensor readings.
-     */
     @Override
     public void update() {
         // Feeder readings
         data.feederConnected = feeder.getLastError() != REVLibError.kOk;
-        data.feederPosition = Radians.of(feederEncoder.getPosition());
-        data.feederVelocity = RadiansPerSecond.of(feederEncoder.getVelocity());
         data.feederVoltage = Volts.of(feeder.getBusVoltage());
         data.feederCurrent = Amps.of(feeder.getOutputCurrent());
 
         // Intake readings
         data.intakeConnected = intake.getLastError() != REVLibError.kOk;
-        data.intakePosition = Radians.of(intakeEncoder.getPosition());
-        data.intakeVelocity = RadiansPerSecond.of(intakeEncoder.getVelocity());
         data.intakeVoltage = Volts.of(intake.getBusVoltage());
         data.intakeCurrent = Amps.of(intake.getOutputCurrent());
     }

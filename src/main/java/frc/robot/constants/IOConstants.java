@@ -5,12 +5,12 @@ import com.studica.frc.AHRS.NavXComType;
 /**
  * Input/Output port assignments and hardware interface constants.
  *
- * <p><strong>Note:</strong> "IO" refers to Input/Output, not Operator Interface.
- *
  * <p>Contains CAN IDs, USB port assignments, and controller port mappings
  * for all robot hardware peripherals. Organized by subsystem for clarity.
  */
 public final class IOConstants {
+
+    private IOConstants() {}
 
     /**
      * Drivetrain hardware port assignments.
@@ -20,13 +20,18 @@ public final class IOConstants {
      */
     public static final class Drivetrain {
 
-        public static final NavXComType kGyroPort = NavXComType.kUSB1; // TODO: Season: may need MXP_SPI
+        private Drivetrain() {}
+
+        /** NavX gyro communication port type. */
+        public static final NavXComType kGyroPort = NavXComType.kUSB1;
     }
 
     /**
      * KitBot hardware port assignments.
      */
     public static final class KitBot {
+
+        private KitBot() {}
 
         /** Feeder motor CAN ID. */
         public static final int kFeeder = 50;
@@ -42,6 +47,8 @@ public final class IOConstants {
      * joystick deadband for eliminating stick drift.
      */
     public static final class Controller {
+
+        private Controller() {}
 
         /** Driver controller USB port (primary pilot). */
         public static final int kDriver = 0;

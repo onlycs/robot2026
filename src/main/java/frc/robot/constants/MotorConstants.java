@@ -19,12 +19,16 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
  */
 public final class MotorConstants {
 
+    private MotorConstants() {}
+
     /**
      * NEO brushless motor specifications (REV-21-1650).
      *
      * <p>Used for swerve module drive motors.
      */
     public static final class Neo {
+
+        private Neo() {}
 
         /**
          * Empirical free speed: 5676 RPM (594.7 rad/s).
@@ -66,6 +70,8 @@ public final class MotorConstants {
      */
     public static final class NeoVortex {
 
+        private NeoVortex() {}
+
         /**
          * Free speed: 6784 RPM (710.3 rad/s).
          *
@@ -85,6 +91,8 @@ public final class MotorConstants {
      * <p>Compact, high-speed motor used for swerve module steering.
      */
     public static final class Neo550 {
+
+        private Neo550() {}
 
         /**
          * Free speed: 11000 RPM (1151.9 rad/s).

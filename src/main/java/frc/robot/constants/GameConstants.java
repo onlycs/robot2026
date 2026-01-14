@@ -10,19 +10,26 @@ import edu.wpi.first.math.geometry.Rotation2d;
  * FRC 2026 game-specific field dimensions and reference points.
  *
  * <p>Contains field geometry constants derived from the official game manual.
- * All dimensions are converted from inches to meters for consistency with WPILib.
+ * All dimensions are converted from inches to meters.
  *
  * <p>These values define the coordinate system used for autonomous navigation
  * and alliance-aware positioning.
+ *
+ * <p>Sources:
+ * <ul>
+ *   <li><a href="https://firstfrc.blob.core.windows.net/frc2026/FieldAssets/2026-field-dimension-dwgs.pdf">2026 Field Dimension Drawings</a>
+ * </ul>
  */
 @SuppressWarnings("SuspiciousNameCombination")
 public class GameConstants {
 
-    /** Field width (short dimension, 317 inches = 8.0518 meters). */
-    public static final double kFieldWidth = Inches.of(317).in(Meters);
+    private GameConstants() {}
 
-    /** Field length (long dimension, 690.875 inches = 17.548225 meters). */
-    public static final double kFieldLength = Inches.of(690.875).in(Meters);
+    /** Field width (short dimension) */
+    public static final double kFieldWidth = Inches.of(317.69).in(Meters);
+
+    /** Field length (long dimension) */
+    public static final double kFieldLength = Inches.of(651.22).in(Meters);
 
     /**
      * Red alliance coordinate system origin.

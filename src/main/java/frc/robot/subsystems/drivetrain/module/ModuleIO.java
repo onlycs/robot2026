@@ -38,15 +38,11 @@ import org.littletonrobotics.junction.Logger;
  */
 public abstract class ModuleIO {
 
-    /**
-     * Data container for swerve module sensor readings and system state.
-     *
-     * Tracks both drive and turn motor/encoder states. Automatically logged
-     * by AdvantageKit via the @AutoLog annotation, enabling data recording
-     * and replay for testing and analysis.
-     */
+    /** Auto-logged data structure for swerve module sensor readings. */
     @AutoLog
     public static class ModuleData {
+
+        ModuleData() {}
 
         /** Drive motor connection status (true if motor responds to commands). */
         public boolean driveConnected = false;

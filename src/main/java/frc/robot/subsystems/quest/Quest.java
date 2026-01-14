@@ -42,6 +42,7 @@ public class Quest {
      * Initializes the QuestNav instance and registers periodic updates.
      * Vision measurements will be sent to the provided callback function.
      *
+     * @param quest The QuestNav IO implementation
      * @param addMeasurement Callback for reporting vision measurements
      */
     public Quest(QuestIO quest, Consumer<VisionMeasurement> addMeasurement) {
