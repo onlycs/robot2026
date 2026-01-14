@@ -37,6 +37,26 @@ public final class MotorConstants {
 
         /** Recommended current limit: 40 amps. */
         public static final double kCurrentLimit = 40;
+
+        /**
+         * PWM modulation period for UVW commutation: 10ms.
+         *
+         * <P>Controls the switching frequency of the motor controller for brushless motor commutation.
+         * Lower periods result in higher commutation frequencies and smoother motor operation.
+         *
+         * This number came from the template code
+         */
+        public static final int kUvwPeriod = 10;
+
+        /**
+         * UVW pulse depth or dead-time setting: 2.
+         *
+         * <p>Defines the dead-time interval between switching commutation phases to prevent
+         * shoot-through and ensure safe transistor switching in the motor controller.
+         *
+         * This number came from the template code
+         */
+        public static final int kUvwDepth = 2;
     }
 
     /**
@@ -77,6 +97,16 @@ public final class MotorConstants {
 
         /** Recommended current limit: 20 amps. */
         public static final double kCurrentLimit = 20;
+
+        /**
+         * UVW pulse depth or dead-time setting: 2.
+         *
+         * <p>Defines the dead-time interval between switching commutation phases to prevent
+         * shoot-through and ensure safe transistor switching in the motor controller.
+         *
+         * This number came from the template code
+         */
+        public static final int kUvwDepth = 2;
     }
 
     /** Nominal battery voltage for motor control (12.0 volts). */

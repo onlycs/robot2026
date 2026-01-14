@@ -13,6 +13,9 @@ import frc.robot.subsystems.drivetrain.gyro.GyroReplay;
 import frc.robot.subsystems.drivetrain.gyro.NavX;
 import frc.robot.subsystems.drivetrain.module.ModuleReplay;
 import frc.robot.subsystems.drivetrain.module.ModuleSpark;
+import frc.robot.subsystems.kitbot.KitBot;
+import frc.robot.subsystems.kitbot.KitBotReplay;
+import frc.robot.subsystems.kitbot.KitBotSpark;
 import frc.robot.subsystems.quest.Meta3S;
 import frc.robot.subsystems.quest.QuestReplay;
 import frc.robot.util.AdvantageUtil;
@@ -39,6 +42,11 @@ public class RobotContainer {
         AdvantageUtil.match(ModuleSpark::new, ModuleReplay::new),
         AdvantageUtil.match(NavX::new, GyroReplay::new),
         AdvantageUtil.match(Meta3S::new, QuestReplay::new)
+    );
+
+    /** KitBot superstructure subsystem */
+    final KitBot kitbot = new KitBot(
+        AdvantageUtil.match(KitBotSpark::new, KitBotReplay::new)
     );
 
     /** Autonomous mode manager - handles auto command selection and execution */

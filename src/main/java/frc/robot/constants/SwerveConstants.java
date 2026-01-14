@@ -39,9 +39,10 @@ public final class SwerveConstants {
      *
      * <p>Each module is assigned:
      * <ul>
-     *   <li>A unique index value (0-3) for CAN ID calculation
-     *   <li>Drive and turn motor CAN IDs (calculated from index)
-     *   <li>Absolute encoder angular offset (zero = wheels forward)
+     *   <li>A unique index value (1-4) for CAN ID calculation
+     *   <li>Driving motor ID, calculated as {@code index * 10}
+     *   <li>Turning motor ID, calculated as {@code driveId + 5}
+     *   <li>Absolute encoder angular offset, converting from robot-centric to wheel-centric angles
      *   <li>Position relative to robot center (X-forward, Y-left)
      * </ul>
      *
@@ -50,10 +51,10 @@ public final class SwerveConstants {
      */
     public enum Module {
         // TODO: Season: make controls set these IDs. Should be FrontLeft=1x and go clockwise from top-down view
-        kFrontLeft(0),
-        kFrontRight(1),
-        kRearLeft(3),
-        kRearRight(2);
+        kFrontLeft(1),
+        kFrontRight(2),
+        kRearRight(3),
+        kRearLeft(4);
 
         public final int value;
 

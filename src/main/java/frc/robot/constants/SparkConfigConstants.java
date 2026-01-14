@@ -1,8 +1,11 @@
 package frc.robot.constants;
 
+import static frc.robot.util.MathUtil.kTau;
+
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.FeedbackSensor;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 /**
@@ -63,6 +66,11 @@ public class SparkConfigConstants {
             kDrive.smartCurrentLimit((int) MotorConstants.Neo.kCurrentLimit);
             kTurn.smartCurrentLimit((int) MotorConstants.Neo550.kCurrentLimit);
 
+            // ===== VOLTAGE COMPENSATION =====
+            // Normalize motor output for battery voltage 11.0-13.0V
+            kDrive.voltageCompensation(MotorConstants.kNominalVoltage);
+            kTurn.voltageCompensation(MotorConstants.kNominalVoltage);
+
             // ===== ENCODER CONVERSIONS =====
             // Drive motor: NEO internal encoder
             kDrive.encoder.positionConversionFactor(
@@ -80,10 +88,10 @@ public class SparkConfigConstants {
                 SwerveConstants.TurnEncoder.kVelocityFactor
             );
 
-            // ===== VOLTAGE COMPENSATION =====
-            // Normalize motor output for battery voltage 11.0-13.0V
-            kDrive.voltageCompensation(MotorConstants.kNominalVoltage);
-            kTurn.voltageCompensation(MotorConstants.kNominalVoltage);
+            // ===== ENCODER UVW SETTINGS =====
+            kDrive.encoder.uvwMeasurementPeriod(MotorConstants.Neo.kUvwPeriod);
+            kDrive.encoder.uvwAverageDepth(MotorConstants.Neo.kUvwDepth);
+            kTurn.absoluteEncoder.averageDepth(MotorConstants.Neo550.kUvwDepth);
 
             // ===== TURN ABSOLUTE ENCODER SETUP =====
             kTurn.absoluteEncoder.inverted(
@@ -132,6 +140,58 @@ public class SparkConfigConstants {
             // Brake mode: resist motion when disabled (better control)
             kDrive.idleMode(SwerveConstants.DriveMotor.kIdleMode);
             kTurn.idleMode(SwerveConstants.TurnMotor.kIdleMode);
+        }
+    }
+
+    /**
+     * KitBot motor configurations.
+     *
+     * <p>Separate configs for feeder and intake motors.
+     */
+    public static final class KitBot {
+
+        /** Complete configuration for feeder motor. */
+        public static final SparkMaxConfig kFeeder;
+
+        /** Complete configuration for intake motor. */
+        public static final SparkMaxConfig kIntake;
+
+        static {
+            kFeeder = new SparkMaxConfig();
+            kIntake = new SparkMaxConfig();
+
+            // ===== CURRENT LIMITS =====
+            // Prevent motor damage and battery voltage sag
+            kFeeder.smartCurrentLimit(30);
+            kIntake.smartCurrentLimit(30);
+
+            // ===== VOLTAGE COMPENSATION =====
+            // Normalize motor output for battery voltage 11.0-13.0V
+            kFeeder.voltageCompensation(MotorConstants.kNominalVoltage);
+            kIntake.voltageCompensation(MotorConstants.kNominalVoltage);
+
+            // ===== ENCODER CONVERSIONS =====
+            // Convert motor outputs from RPM and revs to rad/s and radians
+            kFeeder.encoder.positionConversionFactor(kTau);
+            kFeeder.encoder.velocityConversionFactor(kTau / 60.0);
+            kIntake.encoder.positionConversionFactor(kTau);
+            kIntake.encoder.velocityConversionFactor(kTau / 60.0);
+
+            // ===== UVW SETTINGS =====
+            kFeeder.encoder.uvwMeasurementPeriod(MotorConstants.Neo.kUvwPeriod);
+            kFeeder.encoder.uvwAverageDepth(MotorConstants.Neo.kUvwDepth);
+            kIntake.encoder.uvwMeasurementPeriod(MotorConstants.Neo.kUvwPeriod);
+            kIntake.encoder.uvwAverageDepth(MotorConstants.Neo.kUvwDepth);
+
+            // ===== VOLTAGE COMPENSATION =====
+            // Normalize motor output for battery voltage 11.0-13.0V
+            kFeeder.voltageCompensation(MotorConstants.kNominalVoltage);
+            kIntake.voltageCompensation(MotorConstants.kNominalVoltage);
+
+            // ===== IDLE MODES =====
+            // Brake mode: resist motion when disabled (better control)
+            kFeeder.idleMode(IdleMode.kBrake);
+            kIntake.idleMode(IdleMode.kBrake);
         }
     }
 }

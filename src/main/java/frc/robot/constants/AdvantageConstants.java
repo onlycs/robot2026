@@ -16,15 +16,12 @@ public class AdvantageConstants {
      * <p>Automatically detected based on the robot environment:
      * <ul>
      *   <li>{@link AdvantageMode#Real}: Running on actual robot hardware
-     *   <li>{@link AdvantageMode#Sim}: Running in simulation (currently not supported)
+     *   <li>{@link AdvantageMode#Replay}: Running in a replay session from log files
      * </ul>
-     *
-     * <p>For replay mode, this must be manually set to {@link AdvantageMode#Replay}
-     * in the code before starting.
      */
     public static final AdvantageMode kCurrentMode = RobotBase.isReal()
         ? AdvantageMode.Real
-        : AdvantageMode.Sim;
+        : AdvantageMode.Replay;
 
     /**
      * Robot operating modes for AdvantageKit.

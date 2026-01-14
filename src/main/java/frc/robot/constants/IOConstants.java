@@ -24,6 +24,18 @@ public final class IOConstants {
     }
 
     /**
+     * KitBot hardware port assignments.
+     */
+    public static final class KitBot {
+
+        /** Feeder motor CAN ID. */
+        public static final int kFeeder = 50;
+
+        /** Intake motor CAN ID. */
+        public static final int kIntake = 51;
+    }
+
+    /**
      * Driver station controller port mappings and input filtering.
      *
      * <p>Defines USB ports for driver and operator controllers, plus
