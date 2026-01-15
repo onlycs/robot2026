@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import java.util.function.Supplier;
-
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -22,7 +21,7 @@ public abstract class Pathfind extends SequentialCommandGroup {
     /**
      * Concrete {@link Pathfind} implementation that accepts a target pose via Supplier.
      *
-     * Useful for dynamic targets that may change during the command, or for
+     * <p>Useful for dynamic targets that may change during the command, or for
      * creating {@link Pathfind} instances with a fixed target pose.
      */
     public static class Supplied extends Pathfind {
@@ -58,36 +57,36 @@ public abstract class Pathfind extends SequentialCommandGroup {
     }
 
     Pose2d cache;
-	final Drivetrain drivetrain;
+    final Drivetrain drivetrain;
 
     /**
      * Constructs a Navigate command.
-	 * 
-	 * <ol>
-	 *  <li>Calls {@link #target()} to get the target pose and caches it.
-	 *  <li>Logs the target pose to the field for visualization.
-	 *  <li>Runs {@link Repulse} for faraway pathfinding.
-	 *  <li>Runs {@link Nearby} for close-range precision movement.
-	 *  <li>Clears the target pose from the field logs.
-	 * </ol>
+     *
+     * <ol>
+     *  <li>Calls {@link #target()} to get the target pose and caches it.
+     *  <li>Logs the target pose to the field for visualization.
+     *  <li>Runs {@link Repulse} for faraway pathfinding.
+     *  <li>Runs {@link Nearby} for close-range precision movement.
+     *  <li>Clears the target pose from the field logs.
+     * </ol>
      *
      * @param drivetrain Drivetrain subsystem for movement control
      */
     public Pathfind(Drivetrain drivetrain) {
         this.drivetrain = drivetrain;
-		
-		addCommands(
-			new InstantCommand(this::prepare),
+
+        addCommands(
+            new InstantCommand(this::prepare),
             new Repulse(drivetrain, this::currentTarget),
             new Nearby(drivetrain, this::currentTarget),
-			new InstantCommand(this::release)
+            new InstantCommand(this::release)
         );
     }
 
     /**
      * Gets the target pose for this navigation.
      *
-     * Subclasses must implement this to provide the target, which may be
+     * <p>Subclasses must implement this to provide the target, which may be
      * constant or dynamic (e.g., based on vision measurements).
      *
      * @return Target pose, or null if no valid target
@@ -100,23 +99,23 @@ public abstract class Pathfind extends SequentialCommandGroup {
     protected final void prepare() {
         cache = target();
 
-		drivetrain.getField().getObject("Pathfind/Target").setPose(cache);
-		Logger.recordOutput("Pathfind/Target", cache);
+        drivetrain.getField().getObject("Pathfind/Target").setPose(cache);
+        Logger.recordOutput("Pathfind/Target", cache);
     }
 
-	/**
-	 * Deletes the target pose from the logs
-	 */
-	protected final void release() {
-		Pose2d invalid = new Pose2d(-1, -1, new Rotation2d());
-		drivetrain.getField().getObject("Pathfind/Target").setPose(invalid);
-		Logger.recordOutput("Pathfind/Target", invalid);
-	}
+    /**
+     * Deletes the target pose from the logs
+     */
+    protected final void release() {
+        Pose2d invalid = new Pose2d(-1, -1, new Rotation2d());
+        drivetrain.getField().getObject("Pathfind/Target").setPose(invalid);
+        Logger.recordOutput("Pathfind/Target", invalid);
+    }
 
-	/**
-	 * Gets the currently cached target pose.
-	 */
-	protected final Pose2d currentTarget() {
-		return cache;
-	}
+    /**
+     * Gets the currently cached target pose.
+     */
+    protected final Pose2d currentTarget() {
+        return cache;
+    }
 }

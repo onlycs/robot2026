@@ -70,7 +70,7 @@ class Nearby extends Command {
     /**
      * Constructs a Nearby command.
      *
-     * Initializes the HolonomicDriveController with the three PID controllers,
+     * <p>Initializes the HolonomicDriveController with the three PID controllers,
      * enables continuous input for rotation (angles wrap around), and sets the
      * position tolerance for determining when the target is reached.
      *
@@ -92,7 +92,7 @@ class Nearby extends Command {
     /**
      * Command initialization: Get target pose and prepare for navigation.
      *
-     * Called once when the command starts. Fetches the target pose from
+     * <p>Called once when the command starts. Fetches the target pose from
      * {@link #target}, logs it, and displays it on the field view
      * for debugging.
      */
