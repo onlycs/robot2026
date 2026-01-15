@@ -9,7 +9,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.TimedRobot;
-
+import frc.robot.constants.GameConstants;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -221,6 +221,7 @@ public class Repulsor {
 
     public static final double GOAL_STRENGTH = 0.65;
 
+    // TODO: season: replace with actual obsticles (use choreo?)
     public static final List<Obstacle> FIELD_OBSTACLES = List.of(
         new CircleObstacle(
             new Translation2d(4.49, 4),
@@ -235,8 +236,8 @@ public class Repulsor {
             true
         )
     );
-    static final double FIELD_LENGTH = 16.42;
-    static final double FIELD_WIDTH = 8.16;
+    static final double FIELD_LENGTH = GameConstants.kFieldLength;
+    static final double FIELD_WIDTH = GameConstants.kFieldWidth;
     public static final List<Obstacle> WALLS = List.of(
         new HorizontalObstacle(0.0, 0.5, true),
         new HorizontalObstacle(FIELD_WIDTH, 0.5, false),

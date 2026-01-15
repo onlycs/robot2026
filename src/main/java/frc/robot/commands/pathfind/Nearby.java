@@ -1,4 +1,4 @@
-package frc.robot.commands.align;
+package frc.robot.commands.pathfind;
 
 import static frc.robot.util.MathUtil.kTau;
 
@@ -7,92 +7,57 @@ import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.ControlConstants;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import java.util.function.Supplier;
-import org.littletonrobotics.junction.Logger;
 
 /**
- * Abstract command for pose-based robot navigation using holonomic drive control.
+ * Command for nearby pose-targeted navigation using PIDs.
+ *
+ * <p>This command is used as a helper for {@link Pathfind}. It is
+ * used as the final step: close to the target, switch to PID control.
  *
  * <p>Navigate uses a {@link HolonomicDriveController} with three independent PID controllers
  * to move the robot to a target pose. The controller calculates the required
  * chassis speeds (x, y, rotation) to reach the target.
- *
- * <p>This is an abstract command that subclasses override via {@link Supplied} or
- * by implementing {@link #getTargetPose()}.
- *
- * <p>Default concrete implementation: {@link Supplied}
  */
-public abstract class Navigate extends Command {
+class Nearby extends Command {
 
-    /**
-     * Concrete Navigate implementation that accepts a target pose via Supplier.
-     *
-     * Useful for dynamic targets that may change during the command, or for
-     * creating Navigate instances with a fixed target pose.
-     */
-    public static class Supplied extends Navigate {
-
-        /** Supplier for the target pose (can be fixed or dynamic). */
-        final Supplier<Pose2d> target;
-
-        /**
-         * Constructs Navigate with a dynamic target supplier.
-         *
-         * @param drivetrain Drivetrain subsystem for movement control
-         * @param target Supplier providing target pose each execute cycle
-         */
-        public Supplied(Drivetrain drivetrain, Supplier<Pose2d> target) {
-            super(drivetrain);
-            this.target = target;
-        }
-
-        /**
-         * Constructs Navigate with a fixed target pose.
-         *
-         * @param drivetrain Drivetrain subsystem for movement control
-         * @param target Fixed target pose for this navigation
-         */
-        public Supplied(Drivetrain drivetrain, Pose2d target) {
-            this(drivetrain, () -> target);
-        }
-
-        @Override
-        protected Pose2d getTargetPose() {
-            return target.get();
-        }
-    }
+    /** Get the supplier on {@link #initialize()} */
+    final Supplier<Pose2d> target;
 
     /** PID for X position (field-relative). */
     PIDController xController = new PIDController(
-        ControlConstants.Align.kOrthoP,
-        ControlConstants.Align.kOrthoI,
-        ControlConstants.Align.kOrthoD
+        ControlConstants.Nearby.kOrthoP,
+        ControlConstants.Nearby.kOrthoI,
+        ControlConstants.Nearby.kOrthoD
     );
     /** PID for Y position (field-relative). */
     PIDController yController = new PIDController(
-        ControlConstants.Align.kOrthoP,
-        ControlConstants.Align.kOrthoI,
-        ControlConstants.Align.kOrthoD
+        ControlConstants.Nearby.kOrthoP,
+        ControlConstants.Nearby.kOrthoI,
+        ControlConstants.Nearby.kOrthoD
     );
     /** Profiled PID for rotation with velocity/acceleration constraints. */
     ProfiledPIDController rotController = new ProfiledPIDController(
-        ControlConstants.Align.kTurnP,
-        ControlConstants.Align.kTurnI,
-        ControlConstants.Align.kTurnD,
+        ControlConstants.Nearby.kTurnP,
+        ControlConstants.Nearby.kTurnI,
+        ControlConstants.Nearby.kTurnD,
         new TrapezoidProfile.Constraints(
-            ControlConstants.Align.kMaxTurnVelocity,
-            ControlConstants.Align.kMaxTurnAcceleration
+            ControlConstants.Nearby.kMaxTurnVelocity,
+            ControlConstants.Nearby.kMaxTurnAcceleration
         )
     );
 
     /** High-level holonomic controller combining all three PID loops. */
-    final HolonomicDriveController controller;
+    final HolonomicDriveController controller = new HolonomicDriveController(
+        xController,
+        yController,
+        rotController
+    );
 
     /** Drivetrain subsystem for motion control. */
     final Drivetrain drivetrain;
@@ -103,59 +68,43 @@ public abstract class Navigate extends Command {
     boolean exit = false;
 
     /**
-     * Constructs a Navigate command.
+     * Constructs a Nearby command.
      *
      * Initializes the HolonomicDriveController with the three PID controllers,
      * enables continuous input for rotation (angles wrap around), and sets the
      * position tolerance for determining when the target is reached.
      *
      * @param drivetrain Drivetrain subsystem for movement control
+     * @param target The target supplier
      */
-    public Navigate(Drivetrain drivetrain) {
+    Nearby(Drivetrain drivetrain, Supplier<Pose2d> target) {
         this.drivetrain = drivetrain;
-        this.controller = new HolonomicDriveController(
-            xController,
-            yController,
-            rotController
-        );
+        this.target = target;
 
         // Enable continuous input: angles wrap at 2π so -0.1 rad = 2π - 0.1 rad
         rotController.enableContinuousInput(0, kTau);
         // Set tolerance threshold for "at reference" check
-        controller.setTolerance(ControlConstants.Align.kTolerance);
+        controller.setTolerance(ControlConstants.Nearby.kTolerance);
 
         addRequirements(drivetrain);
     }
 
     /**
-     * Gets the target pose for this navigation.
-     *
-     * Subclasses must implement this to provide the target, which may be
-     * constant or dynamic (e.g., based on vision measurements).
-     *
-     * @return Target pose, or null if no valid target
-     */
-    protected abstract Pose2d getTargetPose();
-
-    /**
      * Command initialization: Get target pose and prepare for navigation.
      *
      * Called once when the command starts. Fetches the target pose from
-     * {@link #getTargetPose()}, logs it, and displays it on the field view
+     * {@link #target}, logs it, and displays it on the field view
      * for debugging.
      */
     @Override
     public final void initialize() {
         exit = false;
-        currentTarget = getTargetPose();
+        currentTarget = target.get();
 
         if (currentTarget == null) {
             exit = true;
             return;
         }
-
-        Logger.recordOutput("Nearby/Target", currentTarget);
-        drivetrain.getField().getObject("Nearby/Target").setPose(currentTarget);
     }
 
     /**
@@ -192,15 +141,6 @@ public abstract class Navigate extends Command {
     @Override
     @OverridingMethodsMustInvokeSuper
     public void end(boolean interrupted) {
-        // Remove target from field visualization by moving it off-field
-        drivetrain
-            .getField()
-            .getObject("Nearby/Target")
-            .setPose(new Pose2d(-1, -1, new Rotation2d()));
-        Logger.recordOutput(
-            "Nearby/Target",
-            new Pose2d(-1, -1, new Rotation2d())
-        );
         // Stop the robot
         drivetrain.drive(new ChassisSpeeds());
     }

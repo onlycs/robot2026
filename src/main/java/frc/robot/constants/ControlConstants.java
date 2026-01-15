@@ -104,17 +104,20 @@ public final class ControlConstants {
         public static final double kTurnI = 0.00;
         /** Derivative gain for rotation error. */
         public static final double kTurnD = 0.00;
+
+        /** Threshold to switch to nearby control. */
+        public static final double kNearbyThreshold = 0.25;
     }
 
     /**
      * Vision-based alignment PID constants.
      *
-     * <p>Used by {@link frc.robot.commands.align.Navigate} and
-     * {@link frc.robot.commands.align.TagAlign} for precise positioning.
+     * <p>Used by {@link frc.robot.commands.pathfind.Pathfind} and
+     * {@link frc.robot.commands.pathfind.TagAlign} for precise positioning.
      */
-    public static final class Align {
+    public static final class Nearby {
 
-        private Align() {}
+        private Nearby() {}
 
         /** Proportional gain for X and Y alignment errors. */
         public static final double kOrthoP = 4.75;

@@ -1,6 +1,8 @@
 package frc.robot.util;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import java.util.function.Function;
 
 /**
@@ -173,8 +175,8 @@ public class Vec2 {
 
     /**
      * Rotates this vector by a given angle, counterclockwise.
-	 * 
-	 * <p>This multiplies the translation vector by a counterclockwise rotation matrix of the given
+     *
+     * <p>This multiplies the translation vector by a counterclockwise rotation matrix of the given
      * angle.
      *
      * <pre>
@@ -255,6 +257,23 @@ public class Vec2 {
      */
     public Vec2 sign() {
         return new Vec2(Math.signum(this.x), Math.signum(this.y));
+    }
+
+    /**
+     * Turns a {@link Translation2d} into a Vec2
+     * @param translation the translation
+     */
+    public Vec2(Translation2d translation) {
+        this.x = translation.getX();
+        this.y = translation.getY();
+    }
+
+    /**
+     * Turns a {@link Pose2d} into a Vec2 using it's Translation
+     * @param pose the pose
+     */
+    public Vec2(Pose2d pose) {
+        this(pose.getTranslation());
     }
 
     /**
