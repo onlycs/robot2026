@@ -2,7 +2,6 @@ package frc.robot.commands.pathfind;
 
 import static frc.robot.util.MathUtil.kTau;
 
-import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -126,7 +125,7 @@ class Nearby extends Command {
             0.01,
             currentTarget.getRotation()
         );
-        // Send field-relative speeds (controller output is in field coordinates)
+        // Send robot-relative speeds to drivetrain
         drivetrain.set(speeds);
     }
 
@@ -139,7 +138,6 @@ class Nearby extends Command {
      * @param interrupted true if command was interrupted, false if finished normally
      */
     @Override
-    @OverridingMethodsMustInvokeSuper
     public void end(boolean interrupted) {
         // Stop the robot
         drivetrain.drive(new ChassisSpeeds());
