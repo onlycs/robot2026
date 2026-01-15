@@ -23,6 +23,8 @@ import java.util.Optional;
  */
 public class AllianceUtil {
 
+    private AllianceUtil() {}
+
     /**
      * A container for the current alliance state with caching.
      *

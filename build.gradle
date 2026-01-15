@@ -138,7 +138,7 @@ spotless {
             exclude "**/build/**", "**/build-*/**", ".direnv/**"
         }
         toggleOffOn()
-        prettier(['prettier': '3.7.4', 'prettier-plugin-java': '2.8.1'])
+        prettier(['prettier': '^3.7.4', 'prettier-plugin-java': '^2.8.1'])
         .config(['parser': 'java', 'tabWidth': 4, 'plugins': ['prettier-plugin-java']])
         removeUnusedImports()
         trimTrailingWhitespace()
@@ -204,3 +204,7 @@ task(eventDeploy) {
     }
 }
 createVersionFile.dependsOn(eventDeploy)
+
+tasks.withType(Javadoc).configureEach {
+    options.memberLevel = JavadocMemberLevel.PRIVATE
+}

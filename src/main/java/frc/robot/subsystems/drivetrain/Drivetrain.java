@@ -34,7 +34,6 @@ import frc.robot.util.AllianceUtil;
 import frc.robot.util.IterUtil;
 import frc.robot.util.RateLimiter;
 import frc.robot.util.Vec2;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -89,8 +88,10 @@ public class Drivetrain extends SubsystemBase {
     /** The Meta Quest 3S, our primary vision tool */
     final Quest quest;
 
-    /** PhotonVision, to callibrate the starting pose of the quest */
+    /** List of measurements to callibrate the starting Pose from */
     final List<VisionMeasurement> callibrators = new ArrayList<>();
+
+    /** PhotonVision, to callibrate the starting pose of the quest */
     final Photon photon = new Photon(
         this.callibrators::add,
         AdvantageUtil.match(CameraPhoton::new, CameraReplay::new)

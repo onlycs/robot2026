@@ -106,37 +106,37 @@ public class SparkConfigConstants {
             // Enable continuous input (0 to 2π wraps around)
             kTurn.closedLoop.positionWrappingEnabled(true);
             kTurn.closedLoop.positionWrappingMinInput(
-                ControlConstants.DrivetrainTurn.kMinInput
+                ControlConstants.ModuleTurn.kMinInput
             );
             kTurn.closedLoop.positionWrappingMaxInput(
-                ControlConstants.DrivetrainTurn.kMaxInput
+                ControlConstants.ModuleTurn.kMaxInput
             );
 
             // ===== DRIVE PID + FEEDFORWARD =====
             kDrive.closedLoop.pid(
-                ControlConstants.DrivetrainDrive.kP,
-                ControlConstants.DrivetrainDrive.kI,
-                ControlConstants.DrivetrainDrive.kD
+                ControlConstants.ModuleDrive.kP,
+                ControlConstants.ModuleDrive.kI,
+                ControlConstants.ModuleDrive.kD
             );
             kDrive.closedLoop.feedForward.sva(
-                ControlConstants.DrivetrainDrive.kS,
-                ControlConstants.DrivetrainDrive.kV,
-                ControlConstants.DrivetrainDrive.kA
+                ControlConstants.ModuleDrive.kS,
+                ControlConstants.ModuleDrive.kV,
+                ControlConstants.ModuleDrive.kA
             );
             kDrive.closedLoop.outputRange(
-                ControlConstants.DrivetrainDrive.kMin,
-                ControlConstants.DrivetrainDrive.kMax
+                ControlConstants.ModuleDrive.kMin,
+                ControlConstants.ModuleDrive.kMax
             );
 
             // ===== TURN PID =====
             kTurn.closedLoop.pid(
-                ControlConstants.DrivetrainTurn.kP,
-                ControlConstants.DrivetrainTurn.kI,
-                ControlConstants.DrivetrainTurn.kD
+                ControlConstants.ModuleTurn.kP,
+                ControlConstants.ModuleTurn.kI,
+                ControlConstants.ModuleTurn.kD
             );
             kTurn.closedLoop.outputRange(
-                ControlConstants.DrivetrainTurn.kMinOutput,
-                ControlConstants.DrivetrainTurn.kMaxOutput
+                ControlConstants.ModuleTurn.kMinOutput,
+                ControlConstants.ModuleTurn.kMaxOutput
             );
 
             // ===== IDLE MODES =====

@@ -34,17 +34,17 @@ public class Alerter {
      *
      * @param <T> The device type
      * @param <E> The error type for this device
+     * @param device The device instance being monitored
+     * @param name Human-readable name of the device
+     * @param error Function to extract the current error state from the device
+     * @param serialize Function to convert an error to a human-readable description
+     * @param signaled List of errors that have already been reported (to avoid duplicates)
      */
     record Device<T, E>(
-        /** The device instance being monitored. */
         T device,
-        /** Human-readable name of the device. */
         String name,
-        /** Function to extract the current error state from the device. */
         Function<T, E> error,
-        /** Function to convert an error to a human-readable description. */
         Function<E, String> serialize,
-        /** List of errors that have already been reported (to avoid duplicates). */
         ArrayList<E> signaled
     ) {
         /**

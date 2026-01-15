@@ -12,56 +12,55 @@ import frc.robot.constants.SwerveConstants;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.util.Repulsor;
 import frc.robot.util.Vec2;
-
 import java.util.List;
 import java.util.function.Supplier;
-
 import org.littletonrobotics.junction.Logger;
 
 /**
  * Faraway pathfinding command.
- * 
+ *
  * <p>Uses {@link Repulsor} for faraway pathfinding to a target pose. Repulsor works
  * by generating a potential field around obstacles and the goal, then using
  * the laws of pysics to "push" the robot away from obstacles and "pull" it
  * toward the goal.
- * 
+ *
  * <p>This command is used as the first step in {@link Pathfind}: far from the target,
  * use Repulsor to pathfind around obstacles. When close to the target, switch to
  * {@link Nearby} for precision movement.
  */
 class Repulse extends Command {
 
-	/** Supplier for the target pose. */
+    /** Supplier for the target pose. */
     final Supplier<Pose2d> target;
 
-	/** Repulsor instance for pathfinding calculations. */
+    /** Repulsor instance for pathfinding calculations. */
     final Repulsor repulsor = new Repulsor();
 
     final Drivetrain drivetrain;
 
-	/** PID controller for orthogonal movement correction. */
+    /** PID controller for orthogonal movement correction. */
     final PIDController orthoController = new PIDController(
         ControlConstants.Auto.kOrthoP,
         ControlConstants.Auto.kOrthoI,
         ControlConstants.Auto.kOrthoD
     );
 
-	/** PID controller for rotational movement correction. */
+    /** PID controller for rotational movement correction. */
     final PIDController rotController = new PIDController(
         ControlConstants.Auto.kTurnP,
         ControlConstants.Auto.kTurnI,
         ControlConstants.Auto.kTurnD
     );
 
+    /** Currently targeted pose, reset every {@link #initialize()} */
     Pose2d currentTarget;
 
-	/** 
-	 * Constructor for Repulse command.
-	 * 
-	 * @param drivetrain Drivetrain subsystem for motion control
-	 * @param target Supplier providing the target pose
-	 */
+    /**
+     * Constructor for Repulse command.
+     *
+     * @param drivetrain Drivetrain subsystem for motion control
+     * @param target Supplier providing the target pose
+     */
     Repulse(Drivetrain drivetrain, Supplier<Pose2d> target) {
         this.target = target;
         this.drivetrain = drivetrain;
@@ -69,35 +68,42 @@ class Repulse extends Command {
         addRequirements(drivetrain);
     }
 
-	/**
-	 * Initializes the Repulse command.
-	 * 
-	 * <ol>
-	 *  <li>Gets the current target pose from the supplier.
-	 *  <li>Sets the Repulsor goal to the target translation.
-	 *  <li>Logs the planned trajectory for visualization.
-	 * </ol>
-	 */
+    /**
+     * Initializes the Repulse command.
+     *
+     * <ol>
+     *  <li>Gets the current target pose from the supplier.
+     *  <li>Sets the Repulsor goal to the target translation.
+     *  <li>Logs the planned trajectory for visualization.
+     * </ol>
+     */
     @Override
     public void initialize() {
         currentTarget = target.get();
         repulsor.setGoal(currentTarget.getTranslation());
 
-		List<Translation2d> traj = repulsor.getTrajectory(drivetrain.pose().getTranslation(), currentTarget.getTranslation(), 20);
-		Logger.recordOutput("Pathfind/RepulseTrajectory", traj.stream().toArray(Translation2d[]::new));
+        List<Translation2d> traj = repulsor.getTrajectory(
+            drivetrain.pose().getTranslation(),
+            currentTarget.getTranslation(),
+            20
+        );
+        Logger.recordOutput(
+            "Pathfind/RepulseTrajectory",
+            traj.stream().toArray(Translation2d[]::new)
+        );
     }
 
-	/**
-	 * Runs the Repulse pathfinding logic each cycle.
-	 * 
-	 * <ol>
-	 *  <li>Gets the next SwerveSample from Repulsor based on current pose and velocity.
-	 *  <li>Calculates the distance vector to the target.
-	 *  <li>Computes PID correction power based on distance.
-	 *  <li>Adds PID correction to Repulsor's suggested velocities.
-	 *  <li>Drives the drivetrain with the combined velocities and rotational PID output.
-	 * </ol>
-	 */
+    /**
+     * Runs the Repulse pathfinding logic each cycle.
+     *
+     * <ol>
+     *  <li>Gets the next SwerveSample from Repulsor based on current pose and velocity.
+     *  <li>Calculates the distance vector to the target.
+     *  <li>Computes PID correction power based on distance.
+     *  <li>Adds PID correction to Repulsor's suggested velocities.
+     *  <li>Drives the drivetrain with the combined velocities and rotational PID output.
+     * </ol>
+     */
     @Override
     public void execute() {
         SwerveSample sample = repulsor.getCmd(
@@ -107,7 +113,7 @@ class Repulse extends Command {
             true
         );
 
-		Logger.recordOutput("Pathfind/RepulseTarget", sample.getPose());
+        Logger.recordOutput("Pathfind/RepulseTarget", sample.getPose());
 
         Vec2 pose = new Vec2(drivetrain.pose());
         Vec2 target = new Vec2(sample.getPose());
@@ -127,23 +133,26 @@ class Repulse extends Command {
         );
     }
 
-	/**
-	 * Cleans up after the Repulse command ends.
-	 * 
-	 * <p>Clears the target and trajectory logs from the field visualization.
-	 */
-	@Override
-	public void end(boolean interrupted) {
-		Logger.recordOutput("Pathfind/RepulseTarget", new Pose2d(-1, -1, new Rotation2d()));
-		Logger.recordOutput("Pathfind/RepulseTrajectory", new Translation2d[0]);
-	}
+    /**
+     * Cleans up after the Repulse command ends.
+     *
+     * <p>Clears the target and trajectory logs from the field visualization.
+     */
+    @Override
+    public void end(boolean interrupted) {
+        Logger.recordOutput(
+            "Pathfind/RepulseTarget",
+            new Pose2d(-1, -1, new Rotation2d())
+        );
+        Logger.recordOutput("Pathfind/RepulseTrajectory", new Translation2d[0]);
+    }
 
-	/**
-	 * Determines if the Repulse command is finished.
-	 * 
-	 * <p>Finishes when the robot is within the nearby threshold distance of the target.
-	 * See {@link ControlConstants.Auto#kNearbyThreshold}.
-	 */
+    /**
+     * Determines if the Repulse command is finished.
+     *
+     * <p>Finishes when the robot is within the nearby threshold distance of the target.
+     * See {@link ControlConstants.Auto#kNearbyThreshold}.
+     */
     @Override
     public boolean isFinished() {
         Vec2 pose = new Vec2(drivetrain.pose());

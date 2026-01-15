@@ -56,7 +56,9 @@ public abstract class Pathfind extends SequentialCommandGroup {
         }
     }
 
+    /** Cached target pose for this navigation. */
     Pose2d cache;
+
     final Drivetrain drivetrain;
 
     /**
@@ -114,6 +116,7 @@ public abstract class Pathfind extends SequentialCommandGroup {
 
     /**
      * Gets the currently cached target pose.
+     * @return The cached target pose
      */
     protected final Pose2d currentTarget() {
         return cache;

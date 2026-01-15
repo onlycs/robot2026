@@ -50,17 +50,26 @@ public class NavX extends GyroIO {
         lock.unlock(); // release the lock
     }
 
-    /** Converts raw gyro angle to an Angle measure */
+    /**
+     * Measure the current gyro angle
+     * @return The current gyro angle
+     */
     Angle measure() {
         return Degrees.of(gyro.getAngle() * kGyroFactor);
     }
 
-    /** Converts raw gyro rate to an AngularVelocity measure */
+    /**
+     * Measure the current gyro rate
+     * @return The current gyro angular velocity
+     */
     AngularVelocity rate() {
         return DegreesPerSecond.of(gyro.getRate() * kGyroFactor);
     }
 
-    /** Collects all readings from the queue into an array */
+    /**
+     * Collect all queued gyro readings into an array
+     * @return Array of gyro readings since last update
+     */
     double[] collect() {
         return readings.stream().mapToDouble(Double::doubleValue).toArray();
     }

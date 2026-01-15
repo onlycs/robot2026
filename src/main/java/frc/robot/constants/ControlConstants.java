@@ -30,9 +30,9 @@ public final class ControlConstants {
      * <p>These gains control the closed-loop velocity regulation for each
      * swerve module's drive motor.
      */
-    public static final class DrivetrainDrive {
+    public static final class ModuleDrive {
 
-        private DrivetrainDrive() {}
+        private ModuleDrive() {}
 
         /** Proportional gain for velocity error. */
         public static final double kP = 0.004;
@@ -60,9 +60,9 @@ public final class ControlConstants {
      * <p>These gains control the closed-loop position regulation for each
      * swerve module's steering motor.
      */
-    public static final class DrivetrainTurn {
+    public static final class ModuleTurn {
 
-        private DrivetrainTurn() {}
+        private ModuleTurn() {}
 
         /** Proportional gain for angular position error. */
         public static final double kP = 2.00;
