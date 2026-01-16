@@ -3,7 +3,6 @@ package frc.robot.util;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import java.util.function.Function;
 
 /**
  * A 2D vector class for representing and manipulating 2D coordinates and directions.
@@ -48,13 +47,31 @@ public class Vec2 {
 
     /**
      * Constructs a new Vec2 with the given magnitude and angle.
-     *
+	 * 
      * @param mag The magnitude for both components
      * @param angle The angle in radians
      */
     public Vec2(double mag, Rotation2d angle) {
-        this.x = mag * Math.cos(angle.getRadians());
-        this.y = mag * Math.sin(angle.getRadians());
+        this.x = mag * angle.getCos();
+        this.y = mag * angle.getSin();
+    }
+
+
+    /**
+     * Turns a {@link Translation2d} into a Vec2
+     * @param translation the translation
+     */
+    public Vec2(Translation2d translation) {
+        this.x = translation.getX();
+        this.y = translation.getY();
+    }
+
+    /**
+     * Turns a {@link Pose2d} into a Vec2 using its Translation
+     * @param pose the pose
+     */
+    public Vec2(Pose2d pose) {
+        this(pose.getTranslation());
     }
 
     /**
@@ -113,7 +130,7 @@ public class Vec2 {
      * @param exp The exponent
      * @return A new Vec2 with each component raised to the power
      */
-    public Vec2 powi(int exp) {
+    public Vec2 pow(double exp) {
         return new Vec2(Math.pow(this.x, exp), Math.pow(this.y, exp));
     }
 
@@ -136,6 +153,35 @@ public class Vec2 {
     public Vec2 div(Vec2 elementwise) {
         return new Vec2(this.x / elementwise.x, this.y / elementwise.y);
     }
+
+	    /**
+     * Returns the component-wise absolute value of this vector.
+     *
+     * @return A new Vec2 with each component set to its absolute value
+     */
+    public Vec2 abs() {
+        return new Vec2(Math.abs(this.x), Math.abs(this.y));
+    }
+
+    /**
+     * Returns the sign of each component.
+     *
+     * Each component becomes -1 (negative), 0 (zero), or 1 (positive).
+     *
+     * @return A new Vec2 with the sign of each component
+     */
+    public Vec2 sign() {
+        return new Vec2(Math.signum(this.x), Math.signum(this.y));
+    }
+
+	/**
+	 * Negates this vector by negating both components.
+	 * 
+	 * @return A new Vec2 representing the negation of this vector
+	 */
+	public Vec2 neg() {
+		return new Vec2(-this.x, -this.y);
+	}
 
     /**
      * Computes the dot product with another vector.
@@ -216,64 +262,6 @@ public class Vec2 {
      */
     public double mag2() {
         return this.dot(this);
-    }
-
-    /**
-     * Returns the component-wise absolute value of this vector.
-     *
-     * @return A new Vec2 with each component set to its absolute value
-     */
-    public Vec2 abs() {
-        return new Vec2(Math.abs(this.x), Math.abs(this.y));
-    }
-
-    /**
-     * Applies a function to both components of this vector.
-     *
-     * @param f The function to apply to each component
-     * @return A new Vec2 with f applied to both x and y
-     */
-    public Vec2 apply(Function<Double, Double> f) {
-        return new Vec2(f.apply(this.x), f.apply(this.y));
-    }
-
-    /**
-     * Applies separate functions to each component of this vector.
-     *
-     * @param x The function to apply to the x component
-     * @param y The function to apply to the y component
-     * @return A new Vec2 with the functions applied to each component
-     */
-    public Vec2 apply(Function<Double, Double> x, Function<Double, Double> y) {
-        return new Vec2(x.apply(this.x), y.apply(this.y));
-    }
-
-    /**
-     * Returns the sign of each component.
-     *
-     * Each component becomes -1 (negative), 0 (zero), or 1 (positive).
-     *
-     * @return A new Vec2 with the sign of each component
-     */
-    public Vec2 sign() {
-        return new Vec2(Math.signum(this.x), Math.signum(this.y));
-    }
-
-    /**
-     * Turns a {@link Translation2d} into a Vec2
-     * @param translation the translation
-     */
-    public Vec2(Translation2d translation) {
-        this.x = translation.getX();
-        this.y = translation.getY();
-    }
-
-    /**
-     * Turns a {@link Pose2d} into a Vec2 using it's Translation
-     * @param pose the pose
-     */
-    public Vec2(Pose2d pose) {
-        this(pose.getTranslation());
     }
 
     /**

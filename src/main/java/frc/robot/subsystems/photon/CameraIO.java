@@ -91,7 +91,7 @@ public abstract class CameraIO {
     /**
      * Sets whether the camera should display driver view or processing view.
      *
-     * @param enabled true for driver view (colorful), false for processing view (grayscale)
+     * @param enabled true for driver view, which exposes a camera feed
      */
     public abstract void setDriverMode(boolean enabled);
 

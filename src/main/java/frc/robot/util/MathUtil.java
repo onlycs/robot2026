@@ -33,12 +33,12 @@ public class MathUtil {
      * @return The transformation from pose a to pose b in a's coordinate frame
      */
     public static Transform2d transformationOf(Pose2d a, Pose2d b) {
-        double dx = b.getX() - a.getX();
+		double dx = b.getX() - a.getX();
         double dy = b.getY() - a.getY();
         double omega = b.getRotation().minus(a.getRotation()).getRadians();
 
-        double cosA = Math.cos(a.getRotation().getRadians());
-        double sinA = Math.sin(a.getRotation().getRadians());
+        double cosA = a.getRotation().getCos();
+        double sinA = a.getRotation().getSin();
 
         double dxA = cosA * dx + sinA * dy;
         double dyA = -sinA * dx + cosA * dy;

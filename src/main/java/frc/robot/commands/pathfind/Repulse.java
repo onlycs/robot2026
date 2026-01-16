@@ -85,12 +85,22 @@ class Repulse extends Command {
         List<Translation2d> traj = repulsor.getTrajectory(
             drivetrain.pose().getTranslation(),
             currentTarget.getTranslation(),
-            20
+            0.1 // 10cm steps
         );
         Logger.recordOutput(
             "Pathfind/RepulseTrajectory",
             traj.stream().toArray(Translation2d[]::new)
         );
+
+        drivetrain
+            .getField()
+            .getObject("Pathfind/RepulseTrajectory")
+            .setPoses(
+                traj
+                    .stream()
+                    .map(t -> new Pose2d(t, new Rotation2d()))
+                    .toArray(Pose2d[]::new)
+            );
     }
 
     /**
@@ -114,6 +124,11 @@ class Repulse extends Command {
         );
 
         Logger.recordOutput("Pathfind/RepulseTarget", sample.getPose());
+
+		drivetrain
+			.getField()
+			.getObject("Pathfind/RepulseTarget")
+			.setPose(currentTarget);
 
         Vec2 pose = new Vec2(drivetrain.pose());
         Vec2 target = new Vec2(sample.getPose());
@@ -145,6 +160,11 @@ class Repulse extends Command {
             new Pose2d(-1, -1, new Rotation2d())
         );
         Logger.recordOutput("Pathfind/RepulseTrajectory", new Translation2d[0]);
+
+        drivetrain
+			.getField()
+			.getObject("Pathfind/RepulseTrajectory")
+			.setPoses(new Pose2d[0]);
     }
 
     /**

@@ -56,7 +56,10 @@ public class RateLimiter {
      */
     public Outputs calculate(Vec2 speed, double rot) {
         return new Outputs(
-            speed.apply(xLimiter::calculate, yLimiter::calculate),
+            new Vec2(
+				xLimiter.calculate(speed.x),
+				yLimiter.calculate(speed.y)
+			),
             rotLimiter.calculate(rot)
         );
     }
