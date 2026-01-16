@@ -8,6 +8,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import frc.robot.constants.IOConstants;
 import frc.robot.constants.SparkConfigConstants;
+import frc.robot.util.Alerter;
 
 /**
  * KitBot IO implementation using Spark Max motor controllers.
@@ -49,6 +50,9 @@ public class KitBotSpark extends KitBotIO {
             SparkConfigConstants.kResetMode,
             SparkConfigConstants.kPersistMode
         );
+
+        Alerter.getInstance().register("Feeder", feeder);
+        Alerter.getInstance().register("Intake", intake);
     }
 
     @Override

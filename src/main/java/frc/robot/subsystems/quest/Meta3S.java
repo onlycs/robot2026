@@ -1,6 +1,9 @@
 package frc.robot.subsystems.quest;
 
+import static edu.wpi.first.units.Units.Milliseconds;
+
 import edu.wpi.first.math.geometry.Pose3d;
+import frc.robot.util.Alerter;
 import gg.questnav.questnav.QuestNav;
 
 /**
@@ -22,12 +25,23 @@ public class Meta3S extends QuestIO {
      */
     public Meta3S() {
         this.quest = new QuestNav();
+
+        Alerter.getInstance().register(
+            "Meta Quest 3S",
+            quest,
+            QuestNav::isConnected
+        );
     }
 
     @Override
     public void update() {
+        quest.commandPeriodic();
+
         data.connected = quest.isConnected();
+        data.tracking = quest.isTracking();
         data.readings = quest.getAllUnreadPoseFrames();
+        data.battery = quest.getBatteryPercent().orElse(-1);
+        data.latency = Milliseconds.of(quest.getLatency());
     }
 
     @Override

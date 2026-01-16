@@ -1,6 +1,9 @@
 package frc.robot.subsystems.quest;
 
+import static edu.wpi.first.units.Units.Milliseconds;
+
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.units.measure.Time;
 import gg.questnav.questnav.PoseFrame;
 import org.littletonrobotics.junction.AutoLog;
 
@@ -23,8 +26,15 @@ public abstract class QuestIO {
 
         /** Connection status of the QuestNav device */
         public boolean connected = false;
+        /** Tracking status of the QuestNav device */
+        public boolean tracking = false;
         /** All of the pose frames read from the QuestNav device */
         public PoseFrame[] readings = new PoseFrame[0];
+
+        /** Quest battery percentage */
+        public int battery = -1;
+        /** Quest latency */
+        public Time latency = Milliseconds.of(0);
     }
 
     /** The current QuestNav data, since the last update() call */

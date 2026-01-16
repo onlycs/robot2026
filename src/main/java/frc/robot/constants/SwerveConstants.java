@@ -7,6 +7,7 @@ import static frc.robot.util.MathUtil.kTau;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import java.util.Arrays;
 
 /**
  * Swerve drive configuration constants.
@@ -30,10 +31,9 @@ public final class SwerveConstants {
     /** Swerve drive kinematics object for odometry and chassis speed conversion. */
     public static final SwerveDriveKinematics kKinematics =
         new SwerveDriveKinematics(
-            Module.kFrontLeft.translation(),
-            Module.kFrontRight.translation(),
-            Module.kRearLeft.translation(),
-            Module.kRearRight.translation()
+            Arrays.stream(Module.values())
+                .map(Module::translation)
+                .toArray(Translation2d[]::new)
         );
 
     /**
@@ -48,19 +48,23 @@ public final class SwerveConstants {
      *   <li>Position relative to robot center (X-forward, Y-left)
      * </ul>
      *
-     * <p>TODO: Season - Ensure controls team sets CAN IDs properly.
+     * <p><strong>Module ordering:</strong> Enum variants are declared in the following
+     * order to ensure that the <code>values()</code> method:
+     * <p><code>[frontLeft, frontRight, rearLeft, rearRight]</code>
+     *
+     * <p>TODO: Ensure controls team sets CAN IDs properly.
      * Should be FrontLeft=1x and go clockwise from top-down view.
      */
     public enum Module {
-        // TODO: Season: make controls set these IDs. Should be FrontLeft=1x and go clockwise from top-down view
+        // TODO: Season: make controls set these IDs. Should be FrontLeft=1x and go clockwise from top-down view.
         /** Front-left swerve module. */
         kFrontLeft(1),
         /** Front-right swerve module. */
         kFrontRight(2),
-        /** Rear-right swerve module. */
-        kRearRight(3),
         /** Rear-left swerve module. */
-        kRearLeft(4);
+        kRearLeft(3),
+        /** Rear-right swerve module. */
+        kRearRight(4);
 
         /** The module's index value (1-4). */
         public final int value;

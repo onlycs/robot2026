@@ -40,7 +40,7 @@ public class NavX extends GyroIO {
 
         Alerter.getInstance().register(this.gyro);
         thread.setName("GyroSensor");
-        new Thread(() -> thread.startPeriodic(1.0 / rate));
+        thread.startPeriodic(1.0 / rate);
     }
 
     /** Reads gyro data and stores it in the readings queue */
@@ -82,7 +82,6 @@ public class NavX extends GyroIO {
         data.reading = this.measure();
         data.velocity = this.rate();
         data.readings = this.collect();
-
         readings.clear();
 
         lock.unlock(); // release the lock

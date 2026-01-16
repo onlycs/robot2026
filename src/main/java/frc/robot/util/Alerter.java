@@ -231,29 +231,34 @@ public class Alerter {
      * @param gyro The AHRS gyro instance to monitor
      */
     public void register(AHRS gyro) {
+        register("Gyro", gyro, AHRS::isConnected);
+    }
+
+    /**
+     * Registers a generic device for disconnection monitoring.
+     *
+     * <p>See {@link #register(String, SparkBase)} for details.
+     *
+     * @param <T> The device type
+     * @param name Human-readable name for the device
+     * @param device The device instance to monitor
+     * @param isConnected Function to check if the device is connected
+     */
+    public <T> void register(
+        String name,
+        T device,
+        Function<T, Boolean> isConnected
+    ) {
         devices.add(
             new Device<>(
-                gyro,
-                "Gyro",
-                AHRS::isConnected,
+                device,
+                name,
+                isConnected,
                 x -> x ? "" : "Disconnected",
                 new ArrayList<>(List.of(true))
             )
         );
     }
-
-    // TODO: when gyro library is updated.
-    // public void register(AHRS gyro) {
-    //     devices.add(
-    //         new Device<>(
-    //             gyro,
-    //             "Gyro",
-    //             AHRS::isConnected,
-    //             x -> x ? "" : "Disconnected",
-    //             new ArrayList<>(List.of(true))
-    //         )
-    //     );
-    // }
 
     /**
      * Updates all device monitoring and sends alerts for any new errors.

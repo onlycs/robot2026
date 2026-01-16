@@ -1,6 +1,7 @@
 package frc.robot.subsystems.photon;
 
 import frc.robot.constants.VisionConstants;
+import frc.robot.util.Alerter;
 import java.util.List;
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
@@ -34,6 +35,12 @@ public class CameraPhoton extends CameraIO {
     public CameraPhoton(VisionConstants.CameraConfig config) {
         super(config);
         camera = new PhotonCamera(config.name);
+
+        Alerter.getInstance().register(
+            String.format("Camera `%s`", config.name()),
+            camera,
+            PhotonCamera::isConnected
+        );
     }
 
     /**

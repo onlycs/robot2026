@@ -82,7 +82,10 @@ public class Quest {
         if (tracking.length == 0) return Optional.empty();
 
         return Optional.of(
-            tracking[tracking.length - 1].questPose3d().toPose2d().getRotation()
+            tracking[tracking.length - 1].questPose3d()
+                .transformBy(kBotToQuest.inverse())
+                .toPose2d()
+                .getRotation()
         );
     }
 
