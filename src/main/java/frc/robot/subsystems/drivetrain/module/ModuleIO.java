@@ -54,6 +54,8 @@ public abstract class ModuleIO {
         public Voltage driveVoltage = Volts.of(0);
         /** Drive motor current draw. */
         public Current driveCurrent = Amps.of(0);
+        /** Drive motor temperature. */
+        public Temperature driveTemperature = Celsius.of(0);
 
         /** Turn motor connection status (true if motor responds to commands). */
         public boolean turnConnected = false;
@@ -65,6 +67,8 @@ public abstract class ModuleIO {
         public Voltage turnVoltage = Volts.of(0);
         /** Turn motor current draw. */
         public Current turnCurrent = Amps.of(0);
+        /** Turn motor temperature. */
+        public Temperature turnTemperature = Celsius.of(0);
     }
 
     /** Current sensor readings for this module. */

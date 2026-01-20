@@ -137,29 +137,31 @@ public class ModuleSpark extends ModuleIO {
     @Override
     public void update() {
         // Update drive motor data
-        this.data.driveConnected = driveMotor.getLastError() == REVLibError.kOk;
-        this.data.drivePosition = Meters.of(
+        data.driveConnected = driveMotor.getLastError() == REVLibError.kOk;
+        data.drivePosition = Meters.of(
             driveEncoder.getPosition() * SwerveConstants.Wheel.kRadius
         );
-        this.data.driveVelocity = MetersPerSecond.of(
+        data.driveVelocity = MetersPerSecond.of(
             driveEncoder.getVelocity() * SwerveConstants.Wheel.kRadius
         );
         // Actual voltage = bus voltage * duty cycle (applied output)
-        this.data.driveVoltage = Volts.of(
+        data.driveVoltage = Volts.of(
             driveMotor.getBusVoltage() * driveMotor.getAppliedOutput()
         );
-        this.data.driveCurrent = Amps.of(driveMotor.getOutputCurrent());
+        data.driveCurrent = Amps.of(driveMotor.getOutputCurrent());
+        data.driveTemperature = Celsius.of(driveMotor.getMotorTemperature());
 
         // Update turn motor data
-        this.data.turnConnected = turnMotor.getLastError() == REVLibError.kOk;
-        this.data.turnPosition = Radians.of(
+        data.turnConnected = turnMotor.getLastError() == REVLibError.kOk;
+        data.turnPosition = Radians.of(
             turnEncoder.getPosition() - id.angularOffset()
         );
-        this.data.turnVelocity = RadiansPerSecond.of(turnEncoder.getVelocity());
-        this.data.turnVoltage = Volts.of(
+        data.turnVelocity = RadiansPerSecond.of(turnEncoder.getVelocity());
+        data.turnVoltage = Volts.of(
             turnMotor.getBusVoltage() * turnMotor.getAppliedOutput()
         );
-        this.data.turnCurrent = Amps.of(turnMotor.getOutputCurrent());
+        data.turnCurrent = Amps.of(turnMotor.getOutputCurrent());
+        data.turnTemperature = Celsius.of(turnMotor.getMotorTemperature());
     }
 
     /**

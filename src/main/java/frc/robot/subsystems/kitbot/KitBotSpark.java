@@ -68,13 +68,17 @@ public class KitBotSpark extends KitBotIO {
     @Override
     public void update() {
         // Feeder readings
-        data.feederConnected = feeder.getLastError() != REVLibError.kOk;
-        data.feederVoltage = Volts.of(feeder.getBusVoltage());
+        data.feederConnected = feeder.getLastError() == REVLibError.kOk;
+        data.feederVoltage = Volts.of(
+            feeder.getBusVoltage() * feeder.getAppliedOutput()
+        );
         data.feederCurrent = Amps.of(feeder.getOutputCurrent());
 
         // Intake readings
-        data.intakeConnected = intake.getLastError() != REVLibError.kOk;
-        data.intakeVoltage = Volts.of(intake.getBusVoltage());
+        data.intakeConnected = intake.getLastError() == REVLibError.kOk;
+        data.intakeVoltage = Volts.of(
+            intake.getBusVoltage() * intake.getAppliedOutput()
+        );
         data.intakeCurrent = Amps.of(intake.getOutputCurrent());
     }
 }

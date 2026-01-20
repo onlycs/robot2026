@@ -105,7 +105,10 @@ public class AutoManager {
         );
 
         String choreo = Filesystem.getDeployDirectory().getPath() + "/choreo";
-        for (File f : Objects.requireNonNull(new File(choreo).listFiles())) {
+        for (File f : Objects.requireNonNullElse(
+            new File(choreo).listFiles(),
+            new File[0]
+        )) {
             if (f.isFile() && f.getName().endsWith(".traj")) {
                 factory
                     .cache()
