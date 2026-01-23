@@ -75,14 +75,14 @@ public abstract class ModuleIO {
     public final ModuleDataAutoLogged data = new ModuleDataAutoLogged();
 
     /** Unique identifier for this module (FL, FR, RL, or RR). */
-    public final SwerveConstants.Module id;
+    public final SwerveConstants.ModuleId id;
 
     /**
      * Constructs a module IO instance.
      *
      * @param id Unique identifier for this module's position on the chassis
      */
-    protected ModuleIO(SwerveConstants.Module id) {
+    protected ModuleIO(SwerveConstants.ModuleId id) {
         this.id = id;
     }
 

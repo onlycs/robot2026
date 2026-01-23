@@ -75,7 +75,7 @@ public class ModuleSpark extends ModuleIO {
      *
      * @param id Module identifier containing CAN IDs and configuration for this module
      */
-    public ModuleSpark(SwerveConstants.Module id) {
+    public ModuleSpark(SwerveConstants.ModuleId id) {
         super(id);
         // Initialize drive and turn motors using CAN IDs from module config
         driveMotor = new SparkMax(id.driveId(), MotorType.kBrushless);

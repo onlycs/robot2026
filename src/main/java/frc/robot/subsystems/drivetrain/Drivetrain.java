@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.constants.ControlConstants;
 import frc.robot.constants.IOConstants;
-import frc.robot.constants.SwerveConstants.Module;
+import frc.robot.constants.SwerveConstants.ModuleId;
 import frc.robot.constants.VisionConstants.VisionMeasurement;
 import frc.robot.subsystems.drivetrain.gyro.GyroIO;
 import frc.robot.subsystems.drivetrain.module.ModuleIO;
@@ -108,7 +108,7 @@ public class Drivetrain extends SubsystemBase {
      * @param quest The Quest IO implementation (Meta3S or QuestReplay)
      */
     public Drivetrain(
-        Function<Module, ModuleIO> moduleFactory,
+        Function<ModuleId, ModuleIO> moduleFactory,
         GyroIO gyro,
         QuestIO quest
     ) {
@@ -116,10 +116,10 @@ public class Drivetrain extends SubsystemBase {
         this.quest = new Quest(quest, this::addVisionMeasurement);
 
         // Create all four swerve modules using the factory
-        frontLeft = moduleFactory.apply(Module.kFrontLeft);
-        frontRight = moduleFactory.apply(Module.kFrontRight);
-        rearLeft = moduleFactory.apply(Module.kRearLeft);
-        rearRight = moduleFactory.apply(Module.kRearRight);
+        frontLeft = moduleFactory.apply(ModuleId.kFrontLeft);
+        frontRight = moduleFactory.apply(ModuleId.kFrontRight);
+        rearLeft = moduleFactory.apply(ModuleId.kRearLeft);
+        rearRight = moduleFactory.apply(ModuleId.kRearRight);
 
         // Initialize the pose estimator with current module positions
         odometry = new SwerveDrivePoseEstimator(

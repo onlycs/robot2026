@@ -13,7 +13,7 @@ import frc.robot.constants.SwerveConstants;
  */
 public class ModuleReplay extends ModuleIO {
 
-    public ModuleReplay(SwerveConstants.Module id) {
+    public ModuleReplay(SwerveConstants.ModuleId id) {
         super(id);
     }
 

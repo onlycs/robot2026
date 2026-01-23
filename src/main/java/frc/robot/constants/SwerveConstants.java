@@ -31,8 +31,8 @@ public final class SwerveConstants {
     /** Swerve drive kinematics object for odometry and chassis speed conversion. */
     public static final SwerveDriveKinematics kKinematics =
         new SwerveDriveKinematics(
-            Arrays.stream(Module.values())
-                .map(Module::translation)
+            Arrays.stream(ModuleId.values())
+                .map(ModuleId::translation)
                 .toArray(Translation2d[]::new)
         );
 
@@ -52,11 +52,9 @@ public final class SwerveConstants {
      * order to ensure that the <code>values()</code> method:
      * <p><code>[frontLeft, frontRight, rearLeft, rearRight]</code>
      *
-     * <p>TODO: Ensure controls team sets CAN IDs properly.
      * Should be FrontLeft=1x and go clockwise from top-down view.
      */
-    public enum Module {
-        // TODO: Season: make controls set these IDs. Should be FrontLeft=1x and go clockwise from top-down view.
+    public enum ModuleId {
         /** Front-left swerve module. */
         kFrontLeft(1),
         /** Front-right swerve module. */
@@ -69,7 +67,7 @@ public final class SwerveConstants {
         /** The module's index value (1-4). */
         public final int value;
 
-        Module(int i) {
+        ModuleId(int i) {
             this.value = i;
         }
 
