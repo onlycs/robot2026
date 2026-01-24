@@ -10,10 +10,10 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import frc.robot.alerter.Alerter;
 import frc.robot.constants.SparkConfigConstants;
 import frc.robot.constants.SwerveConstants;
-import frc.robot.util.Alerter;
-import frc.robot.util.MathUtil;
+import frc.robot.util.MathPlus;
 
 /**
  * REV Robotics SparkMax implementation of a swerve drive module.
@@ -180,7 +180,7 @@ public class ModuleSpark extends ModuleIO {
     public void setStateSetpoint(double driveVelocity, double turnPosition) {
         // Offset correction: add back the angular offset so motor controller
         // receives actual absolute position (undoes the offset from update())
-        double turnSetpoint = MathUtil.normalizeAngle(
+        double turnSetpoint = MathPlus.normalizeAngle(
             turnPosition + id.angularOffset()
         );
 

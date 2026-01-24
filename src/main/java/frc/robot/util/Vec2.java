@@ -7,11 +7,11 @@ import edu.wpi.first.math.geometry.Translation2d;
 /**
  * A 2D vector class for representing and manipulating 2D coordinates and directions.
  *
- * This immutable class provides common vector operations including addition, subtraction,
+ * <p>This immutable class provides common vector operations including addition, subtraction,
  * scalar multiplication, dot product, and magnitude calculations. It's commonly used for
  * representing velocities, positions, and forces in 2D space.
  *
- * The class is immutable, meaning all operations return new Vec2 instances rather than
+ * <p>The class is immutable, meaning all operations return new Vec2 instances rather than
  * modifying the original object.
  */
 public class Vec2 {
@@ -47,7 +47,7 @@ public class Vec2 {
 
     /**
      * Constructs a new Vec2 with the given magnitude and angle.
-	 * 
+     *
      * @param mag The magnitude for both components
      * @param angle The angle in radians
      */
@@ -55,7 +55,6 @@ public class Vec2 {
         this.x = mag * angle.getCos();
         this.y = mag * angle.getSin();
     }
-
 
     /**
      * Turns a {@link Translation2d} into a Vec2
@@ -154,7 +153,7 @@ public class Vec2 {
         return new Vec2(this.x / elementwise.x, this.y / elementwise.y);
     }
 
-	    /**
+    /**
      * Returns the component-wise absolute value of this vector.
      *
      * @return A new Vec2 with each component set to its absolute value
@@ -174,14 +173,14 @@ public class Vec2 {
         return new Vec2(Math.signum(this.x), Math.signum(this.y));
     }
 
-	/**
-	 * Negates this vector by negating both components.
-	 * 
-	 * @return A new Vec2 representing the negation of this vector
-	 */
-	public Vec2 neg() {
-		return new Vec2(-this.x, -this.y);
-	}
+    /**
+     * Negates this vector by negating both components.
+     *
+     * @return A new Vec2 representing the negation of this vector
+     */
+    public Vec2 neg() {
+        return new Vec2(-this.x, -this.y);
+    }
 
     /**
      * Computes the dot product with another vector.
@@ -262,16 +261,5 @@ public class Vec2 {
      */
     public double mag2() {
         return this.dot(this);
-    }
-
-    /**
-     * Creates a copy of this vector.
-     *
-     * <p>This is almost always not needed since the class is immutable.
-     *
-     * @return A new Vec2 with the same components as this vector
-     */
-    public Vec2 copy() {
-        return new Vec2(this.x, this.y);
     }
 }

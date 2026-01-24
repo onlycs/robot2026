@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.alerter.Rumbler;
 import frc.robot.autos.AutoManager;
 import frc.robot.commands.util.FunctionWrapper;
 import frc.robot.constants.IOConstants;
@@ -19,7 +20,6 @@ import frc.robot.subsystems.kitbot.KitBotSpark;
 import frc.robot.subsystems.quest.Meta3S;
 import frc.robot.subsystems.quest.QuestReplay;
 import frc.robot.util.AdvantageUtil;
-import frc.robot.util.Alerter;
 import frc.robot.util.AllianceUtil;
 
 /**
@@ -75,8 +75,8 @@ public class RobotContainer {
         // Configure all button bindings and control schemes
         configureBindings();
 
-        // Provide controllers to the alerting system for controller vibration feedback
-        Alerter.getInstance().provideControllers(driverctl, operctl);
+        // Provide controllers to the rumbler system for controller vibration feedback
+        Rumbler.getInstance().provideControllers(driverctl, operctl);
 
         // Initialize camera server for USB camera feeds
         CameraServer.startAutomaticCapture();

@@ -5,6 +5,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.constants.GameConstants;
+import frc.robot.util.Elastic.Notification;
+import frc.robot.util.Elastic.Notification.NotificationLevel;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -64,6 +66,13 @@ public class AllianceUtil {
                 "WARNING: Tried alliance before FMS report. Defaulting to Blue."
             );
             Thread.dumpStack();
+            Elastic.sendNotification(
+                new Notification(
+                    NotificationLevel.WARNING,
+                    "Alliance",
+                    "Alliance not yet reported by FMS/DS; defaulting to Blue."
+                )
+            );
 
             return Alliance.Blue;
         }
@@ -171,7 +180,7 @@ public class AllianceUtil {
      * @return The flipped rotation (rotated by 180 degrees)
      */
     public static Rotation2d flip(Rotation2d rotation) {
-        return MathUtil.normalizeAngle(rotation.plus(Rotation2d.kPi));
+        return MathPlus.normalizeAngle(rotation.plus(Rotation2d.kPi));
     }
 
     /**

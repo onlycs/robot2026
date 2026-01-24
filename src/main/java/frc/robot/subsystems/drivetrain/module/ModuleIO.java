@@ -7,7 +7,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.units.measure.*;
 import frc.robot.constants.SwerveConstants;
-import frc.robot.util.MathUtil;
+import frc.robot.util.MathPlus;
 import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.Logger;
 
@@ -122,7 +122,7 @@ public abstract class ModuleIO {
         desired.cosineScale(new Rotation2d(data.turnPosition));
 
         double commanded = desired.speedMetersPerSecond;
-        double turn = MathUtil.normalizeAngle(desired.angle.getRadians());
+        double turn = MathPlus.normalizeAngle(desired.angle.getRadians());
 
         // Send the optimized commands to motor controllers
         setStateSetpoint(commanded, turn);

@@ -125,10 +125,10 @@ class Repulse extends Command {
 
         Logger.recordOutput("Pathfind/RepulseTarget", sample.getPose());
 
-		drivetrain
-			.getField()
-			.getObject("Pathfind/RepulseTarget")
-			.setPose(currentTarget);
+        drivetrain
+            .getField()
+            .getObject("Pathfind/RepulseTarget")
+            .setPose(currentTarget);
 
         Vec2 pose = new Vec2(drivetrain.pose());
         Vec2 target = new Vec2(sample.getPose());
@@ -162,9 +162,9 @@ class Repulse extends Command {
         Logger.recordOutput("Pathfind/RepulseTrajectory", new Translation2d[0]);
 
         drivetrain
-			.getField()
-			.getObject("Pathfind/RepulseTrajectory")
-			.setPoses(new Pose2d[0]);
+            .getField()
+            .getObject("Pathfind/RepulseTrajectory")
+            .setPoses(new Pose2d[0]);
     }
 
     /**

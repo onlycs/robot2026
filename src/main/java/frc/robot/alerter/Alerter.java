@@ -1,14 +1,12 @@
-package frc.robot.util;
+package frc.robot.alerter;
 
 import com.revrobotics.REVLibError;
 import com.revrobotics.spark.SparkBase;
 import com.studica.frc.AHRS;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.Notifier;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj.TimedRobot;
 import frc.robot.constants.AdvantageConstants;
-import frc.robot.util.Elastic.Notification.NotificationLevel;
+import frc.robot.constants.AdvantageConstants.AdvantageMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -20,7 +18,6 @@ import java.util.function.Function;
  * <ul>
  *   <li>Tracks registered devices (motors, sensors, etc.) and their error states
  *   <li>Sends notifications to the Elastic dashboard when hardware fails
- *   <li>Provides controller vibration feedback for important events
  *   <li>Only monitors devices when running on real robots (not in replay mode)
  * </ul>
  *
@@ -29,68 +26,19 @@ import java.util.function.Function;
  */
 public class Alerter {
 
-    /**
-     * Internal record representing a monitored device and its error state.
-     *
-     * @param <T> The device type
-     * @param <E> The error type for this device
-     * @param device The device instance being monitored
-     * @param name Human-readable name of the device
-     * @param error Function to extract the current error state from the device
-     * @param serialize Function to convert an error to a human-readable description
-     * @param signaled List of errors that have already been reported (to avoid duplicates)
-     */
-    record Device<T, E>(
-        T device,
-        String name,
-        Function<T, E> error,
-        Function<E, String> serialize,
-        ArrayList<E> signaled
-    ) {
-        /**
-         * Checks the device for a new error and alerts if one is found.
-         *
-         * Only reports each unique error once - subsequent occurrences are ignored.
-         */
-        void alert() {
-            E err = error.apply(device);
-            if (err == null || signaled.contains(err)) return;
-
-            // Send notification to Elastic dashboard
-            Elastic.sendNotification(
-                new Elastic.Notification(
-                    NotificationLevel.ERROR,
-                    "Device failed",
-                    String.format("%s reported: %s", name, serialize.apply(err))
-                )
-            );
-
-            signaled.add(err);
-        }
-    }
-
     /** Singleton instance of the Alerter. */
     private static Alerter instance;
+
+    private Notifier periodic = new Notifier(this::update);
 
     /** List of all monitored devices. */
     ArrayList<Device<?, ?>> devices = new ArrayList<>();
 
-    /** Driver controller for rumble feedback. */
-    CommandXboxController driverctl;
-
-    /** Operator controller for rumble feedback. */
-    CommandXboxController operctl;
-
-    /** Timer for controlling rumble duration. */
-    Notifier timer = new Notifier(this::still);
-
     /**
-     * Private constructor - use getInstance() instead.
-     *
-     * Initializes the vibration timer with an appropriate name for debugging.
+     * Private constructor, see {@link #getInstance()}.
      */
     private Alerter() {
-        timer.setName("VibrateTimer");
+        periodic.startPeriodic(TimedRobot.kDefaultPeriod);
     }
 
     /**
@@ -144,62 +92,6 @@ public class Alerter {
             case kParamInvalidValue -> "Invalid parameter value";
             case kCannotPersistParametersWhileEnabled -> "Cannot persist parameters while Spark is enabled";
         };
-    }
-
-    /**
-     * Provides the Xbox controllers to the alerter for rumble feedback.
-     *
-     * Must be called before using rumble() functionality. Asserts that controllers
-     * haven't already been provided to prevent accidental reconfiguration.
-     *
-     * @param driverctl The driver's Xbox controller
-     * @param operctl The operator's Xbox controller
-     */
-    public void provideControllers(
-        CommandXboxController driverctl,
-        CommandXboxController operctl
-    ) {
-        assert this.driverctl == null &&
-        this.operctl == null : "Controllers already provided";
-
-        this.driverctl = driverctl;
-        this.operctl = operctl;
-    }
-
-    /**
-     * Triggers controller vibration feedback for 0.5 seconds.
-     *
-     * <p>Activates different rumble patterns on each controller:
-     * <ul>
-     *   <li>Operator: Both-sided rumble
-     *   <li>Driver: Left-side rumble
-     * </ul>
-     *
-     * <p>No rumble occurs during autonomous mode.
-     * The vibration is controlled by a timer that automatically stops after 0.5 seconds.
-     */
-    public void rumble() {
-        assert driverctl != null &&
-        operctl != null : "Controllers not provided";
-
-        // Don't rumble during autonomous
-        if (DriverStation.isAutonomous()) return;
-
-        this.operctl.setRumble(RumbleType.kBothRumble, 1);
-        this.driverctl.setRumble(RumbleType.kLeftRumble, 1);
-
-        timer.stop();
-        timer.startSingle(0.5);
-    }
-
-    /**
-     * Stops all controller vibration.
-     *
-     * Called automatically by the timer after the rumble duration expires.
-     */
-    private void still() {
-        this.operctl.setRumble(RumbleType.kBothRumble, 0);
-        this.driverctl.setRumble(RumbleType.kLeftRumble, 0);
     }
 
     /**
@@ -263,14 +155,11 @@ public class Alerter {
     /**
      * Updates all device monitoring and sends alerts for any new errors.
      *
-     * This should be called periodically (typically in robotPeriodic).
-     * Only monitors devices when running on a real robot - skips checks during replay.
+     * <p>This should be called periodically.
+     * <p>Only monitors devices when running on a real robot - skips checks during replay.
      */
-    public void update() {
-        if (
-            AdvantageConstants.kCurrentMode !=
-            AdvantageConstants.AdvantageMode.Real
-        ) {
+    private void update() {
+        if (AdvantageConstants.kCurrentMode != AdvantageMode.Real) {
             return;
         }
 

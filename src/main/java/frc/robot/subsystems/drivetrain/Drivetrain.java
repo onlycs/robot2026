@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.constants.ControlConstants;
 import frc.robot.constants.IOConstants;
+import frc.robot.constants.SwerveConstants.MaxSpeed;
 import frc.robot.constants.SwerveConstants.ModuleId;
 import frc.robot.constants.VisionConstants.VisionMeasurement;
 import frc.robot.subsystems.drivetrain.gyro.GyroIO;
@@ -37,6 +38,7 @@ import frc.robot.util.Vec2;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -88,12 +90,12 @@ public class Drivetrain extends SubsystemBase {
     /** The Meta Quest 3S, our primary vision tool */
     final Quest quest;
 
-    /** List of measurements to callibrate the starting Pose from */
-    final List<VisionMeasurement> callibrators = new ArrayList<>();
+    /** List of measurements to calibrate the starting Pose from */
+    final List<VisionMeasurement> calibrators = new ArrayList<>();
 
-    /** PhotonVision, to callibrate the starting pose of the quest */
+    /** PhotonVision, to calibrate the starting pose of the quest */
     final Photon photon = new Photon(
-        this.callibrators::add,
+        this.calibrators::add,
         AdvantageUtil.match(CameraPhoton::new, CameraReplay::new)
     );
 
@@ -252,9 +254,11 @@ public class Drivetrain extends SubsystemBase {
         }
 
         // Limit to maximum angular speed
-        if (speeds.omegaRadiansPerSecond > MaxSpeed.kAngular) {
-            speeds.omegaRadiansPerSecond = MaxSpeed.kAngular;
-        }
+        speeds.omegaRadiansPerSecond = MathUtil.clamp(
+            speeds.omegaRadiansPerSecond,
+            -MaxSpeed.kAngular,
+            MaxSpeed.kAngular
+        );
 
         // Discretize speeds for more accurate control (matches 20ms robot tick)
         ChassisSpeeds discrete = ChassisSpeeds.discretize(speeds, 0.02);
@@ -320,13 +324,11 @@ public class Drivetrain extends SubsystemBase {
      * @param rotPower The rotational power input ([-1, 1])
      */
     public void drive(Vec2 pow, double rotPower) {
-        // Normalize inputs if magnitude exceeds 1.0
-        if (pow.mag() > 1) pow = pow.norm();
-
         // Scale to maximum velocities
         Vec2 vel = pow.mul(MaxSpeed.kLinear);
         double rot = rotPower * MaxSpeed.kAngular;
 
+        // NOTE: No need to speed limit here; set() will handle that.
         drive(new ChassisSpeeds(vel.x, vel.y, rot));
     }
 
@@ -336,13 +338,11 @@ public class Drivetrain extends SubsystemBase {
      * @param controller The Xbox controller to read input from
      */
     public void drive(CommandXboxController controller) {
+        Vec2 linear = new Vec2(controller.getLeftX(), controller.getLeftY());
+
         // Apply deadband to joystick inputs
-        double xpow = MathUtil.applyDeadband(
-            controller.getLeftX(),
-            IOConstants.Controller.kDeadband
-        );
-        double ypow = MathUtil.applyDeadband(
-            controller.getLeftY(),
+        double xymag = MathUtil.applyDeadband(
+            linear.mag(),
             IOConstants.Controller.kDeadband
         );
         double rot = MathUtil.applyDeadband(
@@ -350,7 +350,7 @@ public class Drivetrain extends SubsystemBase {
             IOConstants.Controller.kDeadband
         );
 
-        Vec2 input = new Vec2(xpow, ypow);
+        Vec2 input = linear.norm().mul(xymag);
 
         // Apply squared inputs for finer low-speed control
         Vec2 input2 = input.mul(input.abs());
@@ -368,11 +368,29 @@ public class Drivetrain extends SubsystemBase {
          *   +Rot = clockwise           +Rot = counter-clockwise
          *
          * Transformation needed:
-         *   +Xc -> -Yw  (right stick -> left motion negation)
          *   +Yc -> -Xw  (down stick -> forward motion negation)
+         *   +Xc -> -Yw  (right stick -> left motion negation)
          *   +Rotc -> -Rotw (negate rotation for ccw-positive)
          */
-        drive(new Vec2(-limited.vel().y, -limited.vel().x), -limited.rot());
+        Vec2 linearcmd = new Vec2(-limited.vel().y, -limited.vel().x);
+        double rotcmd = -limited.rot();
+
+        /*
+         * Field-centric drive coordinate transformation based on alliance color.
+         *
+         * BLUE ALLIANCE (origin on driver station side):
+         *   - Joystick forward (+Y) → Robot moves toward opposing alliance (+X field coords)
+         *   - No transformation needed - joystick and field coordinates align naturally
+         *
+         * RED ALLIANCE (origin on opposing alliance side):
+         *   - Joystick forward (+Y) → Robot should move toward opposing alliance (-X field coords)
+         *   - Linear commands must be inverted to maintain driver perspective
+         *   - This ensures drivers have consistent controls regardless of alliance color
+         */
+        Optional<Boolean> invert = AllianceUtil.invert();
+        if (invert.orElse(false)) linearcmd = linearcmd.neg(); // Invert for red alliance, skip if no FMS/DS
+
+        drive(linearcmd, rotcmd);
     }
 
     /**
@@ -404,21 +422,22 @@ public class Drivetrain extends SubsystemBase {
     }
 
     /**
-     * Callibrate the initial pose of the robot
+     * Calibrate the initial pose of the robot
      *
      * Photon/AprilTag measurements are recorded and collected while the robot is disabled.
      * Once enabled, we average the latest few measurements and set our starting pose to that.
      */
-    void callibrate() {
-        if (callibrators.isEmpty()) return;
+    private void calibrate() {
+        if (calibrators.isEmpty()) return;
 
-        // Average all callibrator measurements
+        // Average all calibrator measurements
         double x = 0;
         double y = 0;
         double sin = 0;
         double cos = 0;
+        int n = 0;
 
-        for (VisionMeasurement vm : callibrators) {
+        for (VisionMeasurement vm : calibrators) {
             double age = Timer.getFPGATimestamp() - vm.timestamp();
             if (age > 15) continue; // Ignore old measurements
 
@@ -428,22 +447,21 @@ public class Drivetrain extends SubsystemBase {
             y += est.getY();
             sin += est.getRotation().getSin();
             cos += est.getRotation().getCos();
+            n++;
         }
-
-        int n = callibrators.size();
 
         x /= n;
         y /= n;
         sin /= n;
         cos /= n;
 
-        Pose2d avg = new Pose2d(x, y, new Rotation2d(sin, cos));
+        Pose2d avg = new Pose2d(x, y, new Rotation2d(cos, sin));
 
         // Reset odometry and gyro to the averaged pose
         reset(avg);
 
-        // Clear callibrators for next use
-        callibrators.clear();
+        // Clear calibrators for next use
+        calibrators.clear();
     }
 
     /**
@@ -482,11 +500,11 @@ public class Drivetrain extends SubsystemBase {
      */
     @Override
     public void periodic() {
-        // Collect updates when disabled; callibrate once enabled.
-        // although callibrate() is called many times, it only acts once
-        // since we clear the callibrators list at the end of the method.
+        // Collect updates when disabled; calibrate once enabled.
+        // although calibrate() is called many times, it only acts once
+        // since we clear the calibrators list at the end of the method.
         if (DriverStation.isDisabled()) photon.update();
-        else callibrate();
+        else calibrate();
 
         // Update other subsystems
         quest.update();
@@ -524,6 +542,7 @@ public class Drivetrain extends SubsystemBase {
         AdvantageUtil.logActiveCommand(this);
 
         // Update dashboard field display
+        field.setRobotPose(pose());
         SmartDashboard.putData("Field", field);
     }
 }

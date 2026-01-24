@@ -3,7 +3,7 @@ package frc.robot.subsystems.quest;
 import static edu.wpi.first.units.Units.Milliseconds;
 
 import edu.wpi.first.math.geometry.Pose3d;
-import frc.robot.util.Alerter;
+import frc.robot.alerter.Alerter;
 import gg.questnav.questnav.QuestNav;
 
 /**

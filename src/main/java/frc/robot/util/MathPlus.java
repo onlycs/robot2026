@@ -7,12 +7,14 @@ import edu.wpi.first.math.geometry.Transform2d;
 /**
  * Mathematical utility functions for robotics calculations.
  *
- * This class provides helper methods for common operations involving poses,
+ * <p>This class provides helper methods for common operations involving poses,
  * rotations, and transformations in 2D space.
+ *
+ * <p>Called {@link MathPlus} because WPI stole MathUtil, smh.
  */
-public class MathUtil {
+public class MathPlus {
 
-    private MathUtil() {}
+    private MathPlus() {}
 
     /** Tau (2π) constant for angle calculations. */
     public static final double kTau = 2.0 * Math.PI;
@@ -33,7 +35,7 @@ public class MathUtil {
      * @return The transformation from pose a to pose b in a's coordinate frame
      */
     public static Transform2d transformationOf(Pose2d a, Pose2d b) {
-		double dx = b.getX() - a.getX();
+        double dx = b.getX() - a.getX();
         double dy = b.getY() - a.getY();
         double omega = b.getRotation().minus(a.getRotation()).getRadians();
 

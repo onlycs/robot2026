@@ -1,7 +1,7 @@
 package frc.robot.subsystems.photon;
 
+import frc.robot.alerter.Alerter;
 import frc.robot.constants.VisionConstants;
-import frc.robot.util.Alerter;
 import java.util.List;
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;

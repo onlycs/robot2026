@@ -2,7 +2,7 @@ package frc.robot.constants;
 
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
-import static frc.robot.util.MathUtil.kTau;
+import static frc.robot.util.MathPlus.kTau;
 
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import edu.wpi.first.math.geometry.Translation2d;

@@ -6,9 +6,9 @@ import static edu.wpi.first.units.Units.Volts;
 import com.revrobotics.REVLibError;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import frc.robot.alerter.Alerter;
 import frc.robot.constants.IOConstants;
 import frc.robot.constants.SparkConfigConstants;
-import frc.robot.util.Alerter;
 
 /**
  * KitBot IO implementation using Spark Max motor controllers.
