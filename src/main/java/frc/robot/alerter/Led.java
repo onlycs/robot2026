@@ -19,7 +19,7 @@ import java.util.function.Consumer;
  * <p>The priority system ensures that more important alerts (like robot alerts) take precedence over
  * less important ones (like idle states). States are automatically sorted by priority level.</p>
  *
- * <h3>Usage Example:</h3>
+ * <h2>Usage Example:</h2>
  * <pre>{@code
  * Led led = Led.getInstance();
  *
